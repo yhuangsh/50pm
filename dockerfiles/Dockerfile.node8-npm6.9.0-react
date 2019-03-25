@@ -1,0 +1,5 @@
+FROM node:8-alpine
+RUN npm install -g npm && \
+    mkdir /react
+WORKDIR /react
+ENTRYPOINT ["/bin/sh"]
