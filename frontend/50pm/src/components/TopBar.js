@@ -8,6 +8,10 @@ import styled from 'styled-components';
 const Frame = styled.div`
   margin: 1ex .5em;
   border: 1px solid black;
+
+  @media print {
+    display: none;
+  }
 `;
 
 const Title = styled.h2`

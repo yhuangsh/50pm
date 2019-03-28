@@ -15,6 +15,9 @@ const Frame = styled.div`
   flex-flow: column;
   align-items: center;
 
+  @media print {
+    display: none;
+  }
 `;
 
 const Title = styled.h3`
@@ -38,7 +41,7 @@ const OptionGroup = styled.div`
 const Option = styled.h4`
   flex: 1;
 
-  color: ${props => props.enable ? 'black' : 'lightgrey'};
+  color: ${props => props.enable ? 'black' : 'grey'};
   font-family: 'Fira Code', monospace;
   font-weight: 100;
 
@@ -51,44 +54,49 @@ const Option = styled.h4`
 
 // Components
 
-const DigitOptions = () => {
+const DigitOptions = (props) => {
   const D1 = [true, false, false];
   const D2 = [false, true, false];
   const D3 = [false, false, true];
 
-  let [opt, setOpt] = useState([g.options.digits]);
-  console.log('DigitOption: config.options.digits=', g.options.digits);
-
-  const onClick = (e, opt) => {
-    setOpt(opt);
-    g.options.digits = opt;
-    console.log('onClick: config.options.digits=', g.options.digits);
-  }
+  let opt = props.digitOpt;
 
   return (
     <React.Fragment>
       <Title>...Digits...</Title>
       <OptionGroup>
-        <Option enable={opt[0]} onClick={e => onClick(e, D1)}>1 digit</Option>
-        <Option enable={opt[1]} onClick={e => onClick(e, D2)}>2 digits</Option>
-        <Option enable={opt[2]} onClick={e => onClick(e, D3)}>3 digits</Option>
+        <Option enable={opt[0]} onClick={e => props.onClickDigit(e, D1)}>1 digit</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>2 digits</Option>
+        <Option enable={opt[2]} onClick={e => props.onClickDigit(e, D3)}>3 digits</Option>
       </OptionGroup>
     </React.Fragment>
   );
 }
 
-const SettingsPanel = () => {
-  let n1 = 10, op = 0, n2 = 20, n3 = 30;
+const UnknownOptions = (props) => {
+  const U1 = [true, false, false];
+  const U2 = [false, true, false];
+  const U3 = [false, false, true];
+
+  let opt = props.unknownOpt;
 
   return (
-    <Frame>
-      <DigitOptions />
+    <React.Fragment>
       <Title>...Unknowns...</Title>
       <OptionGroup>
-        <Option>Left only</Option>
-        <Option>Right only</Option>
-        <Option>Left and Right</Option>
+        <Option enable={opt[0]} onClick={e => props.onClickUnknown(e, U1)}>Left</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickUnknown(e, U2)}>Right</Option>
+        <Option enable={opt[2]} onClick={e => props.onClickUnknown(e, U3)}>Both</Option>
       </OptionGroup>
+    </React.Fragment>
+  );
+}
+
+const SettingsPanel = (props) => {
+  return (
+    <Frame>
+      <DigitOptions {...props} />
+      <UnknownOptions {...props}/>
     </Frame>
   );
 }

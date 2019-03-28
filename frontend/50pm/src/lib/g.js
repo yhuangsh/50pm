@@ -1,7 +1,7 @@
 export const EQU_WIDTH = '18em';
 
 
-export var options = {
+export var opts = {
   digits: [true, false, false],
   unknowns: [true, false, false],
 }
