@@ -2,10 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 
 const PageBreak = styled.div`
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  page-break-after: always;
+  @media screen {
+    margin: 2ex 0;
+  }
+  
+  @media print {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    page-break-after: always;
+  }
 `;
 
 const StyledA4 = styled.div`
@@ -13,8 +19,7 @@ const StyledA4 = styled.div`
   margin: 0 auto;
 
   @media screen {
-    border: 1px solid black;
-    /*box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);*/
+    box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
   }
 `;
 

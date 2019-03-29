@@ -8,8 +8,12 @@ import {
 import EquationList from '../components/EquationList';
 
 const Frame = styled.div`
-  margin: 0;
-  padding: 0;
+  @media screen {
+    min-width: 250mm;
+    margin: 1ex .5em;
+    padding: 3ex 0;
+    /*border: 1px solid black;*/
+  }
 `;
 
 const PrintPreview = (props) => {

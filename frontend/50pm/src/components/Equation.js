@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import * as g from '../lib/g';
+import * as defaults from '../lib/defaults';
 
 // Constants
 
@@ -10,9 +10,9 @@ import * as g from '../lib/g';
 
 const Frame = styled.div`
   /* self */
-  width: ${g.EQU_WIDTH};
+  width: ${defaults.EQU_WIDTH};
 
-  font-family: 'Fira Code', monospace;
+  font-family: 'Fira Mono', monospace;
   font-size: 1.2em;
   font-weight: 100;
 

@@ -8,11 +8,21 @@ function genEqus(n, digitOpt, unknownOpt) {
     equs.push(equ);
   }
 
-  console.log("genEqus.length = ", equs.length);
+  console.log('genEqus.length = ', equs.length);
   return {id: shortid.generate(), equs: equs};
 }
 
-export { genEqus };
+function genEqusList(m, n, digitOpt, unknownOpt) {
+  let equsList = [];
+  for (let i = 0; i < m; i++) {
+    equsList.push(genEqus(n, digitOpt, unknownOpt));
+  }
+
+  console.log('genEqusList.length = ', equsList.length);
+  return equsList;
+}
+
+export { genEqus, genEqusList };
 
 // Utilities
 
@@ -40,7 +50,7 @@ function genRandomEqu(digitOpt, unknownOpt) {
 }
 
 function genRandomInt(min, max) {
-  return Math.floor(Math.floor(min) + Math.random() * Math.floor(max));
+  return Math.floor(min) + Math.floor( Math.random() * Math.floor(max - min));
 }
 
 function adjustN1N2(n1, n2, op) {
