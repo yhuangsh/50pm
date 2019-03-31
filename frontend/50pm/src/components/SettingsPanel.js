@@ -40,6 +40,8 @@ const Option = styled.h4`
   flex: 1;
 
   color: ${props => props.enable ? 'black' : 'grey'};
+  font-size: ${props => props.enable ? '110%' : '100%'};
+
   font-family: 'Dosis', cursive;
   font-weight: 100;
 
