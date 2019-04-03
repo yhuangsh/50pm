@@ -9,10 +9,9 @@ before_install:
   - cd frontend/50pm
 
 script:
-  - pwd
-  - ls -R .
-  - echo "build done"
+  - yarn build
 
 after_success:
+  - ls build
   - cd ..
   - tools/mk-docker-image.sh
