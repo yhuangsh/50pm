@@ -9,7 +9,8 @@ before_install:
   - cd frontend/50pm
 
 script:
-  - ls -R build
+  - pwd
+  - ls -R .
   - echo "build done"
 
 after_success:
