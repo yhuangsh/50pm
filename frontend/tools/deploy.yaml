@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fiftypm
+  labels:
+    app: fiftypm
+spec:
+  selector: 
+    app: fiftypm
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: fiftypm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiftypm
+  labels: 
+    app: fiftypm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fiftypm
+  template:
+    metadata:
+      labels:
+        app: fiftypm
+    spec:
+      containers:
+      - name: fiftypm
+        image: yhuangsh/50pm:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: fiftypm
+
+

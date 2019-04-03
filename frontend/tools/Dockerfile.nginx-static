@@ -1,0 +1,6 @@
+FROM nginx:alpine
+COPY nginx.default.conf /etc/nginx/conf.d/default.conf
+COPY *.js *.html *.json /usr/share/nginx/html/50pm/
+COPY static /usr/share/nginx/html/50pm/static/
+
+
