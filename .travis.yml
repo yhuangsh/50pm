@@ -9,4 +9,9 @@ before_install:
   - cd frontend/50pm
 
 script:
+  - ls -R build
   - echo "build done"
+
+after_success:
+  - cd ..
+  - tools/mk-docker-image.sh
