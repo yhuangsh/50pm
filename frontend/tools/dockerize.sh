@@ -2,5 +2,6 @@
 
 # run from frontend/
 cp config/nginx.default.conf 50pm/build
-docker build -t yhuangsh/50pm -f tools/Dockerfile.nginx-static 50pm/build
+cp tools/Dockerfile.nginx-static 50pm/build
+docker build -t yhuangsh/50pm -f 50pm/build/Dockerfile.nginx-static 50pm/build
 docker push yhuangsh/50pm
