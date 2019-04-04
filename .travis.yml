@@ -7,6 +7,9 @@ services:
 
 before_install:
   - cd frontend/50pm
+  - openssl aes-256-cbc -K $encrypted_78aec6180b5a_key -iv $encrypted_78aec6180b5a_iv -in tools/config.enc -out ~/.kube/config -d
+  - ls ~/.kube
+  - kubectl version
 
 script:
   - yarn build
