@@ -14,14 +14,10 @@ script:
 after_success:
   - cd ..
   - tools/dockerize.sh
-
-before_deploy:
   - cd ..
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
   - chmod +x ./kubectl
   - openssl aes-256-cbc -K $encrypted_78aec6180b5a_key -iv $encrypted_78aec6180b5a_iv -in config.enc -out kc -d
-
-deploy:
   - ./kubectl --kubeconfig=./kc delete svc/fiftypm-staging
   - ./kubectl --kubeconfig=./kc delete deploy/fiftypm-staging
   - ./kubectl --kubeconfig=./kc create -f frontend/tools/deploy.staging.yaml
