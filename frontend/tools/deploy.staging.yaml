@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fiftypm-staging
+  labels:
+    app: fiftypm-staging
+spec:
+  selector: 
+    app: fiftypm-staging
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: fiftypm-staging
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiftypm-staging
+  labels: 
+    app: fiftypm-staging
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fiftypm-staging
+  template:
+    metadata:
+      labels:
+        app: fiftypm-staging
+    spec:
+      containers:
+      - name: fiftypm-staging
+        image: yhuangsh/50pm:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: fiftypm-staging
+
+
