@@ -10,12 +10,22 @@ const Frame = styled.div`
  /* border: 1px solid black;*/
 
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: column nowrap;
   align-items: center;
 
   @media print {
     display: none;
   }
+`;
+
+const OptionGroup = styled.div`
+  width: 80%;
+  flex: 1;
+  
+  display: flex;
+  flex-flow: row nowrap;
+  justify-items: space-around;
+  align-items: baseline;
 `;
 
 const Title = styled.h3`
@@ -24,16 +34,7 @@ const Title = styled.h3`
   font-family: 'Montserrat', sans-serif;
   font-weight: 100;
 
-  text-align: center;
-`;
-
-const OptionGroup = styled.div`
-  width: 80%;
-  flex: 2;
-  
-  display: flex;
-  flex-flow: column nowrap;
-  justify-items: space-around;
+  text-align: left;
 `;
 
 const Option = styled.h4`
@@ -62,14 +63,12 @@ const DigitOptions = (props) => {
   let opt = props.digitOpt;
 
   return (
-    <React.Fragment>
+    <OptionGroup>
       <Title>Digits</Title>
-      <OptionGroup>
-        <Option enable={opt[0]} onClick={e => props.onClickDigit(e, D1)}>1 digit</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>2 digits</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickDigit(e, D3)}>3 digits</Option>
-      </OptionGroup>
-    </React.Fragment>
+      <Option enable={opt[0]} onClick={e => props.onClickDigit(e, D1)}>1 digit</Option>
+      <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>2 digits</Option>
+      <Option enable={opt[2]} onClick={e => props.onClickDigit(e, D3)}>3 digits</Option>
+    </OptionGroup>
   );
 }
 
@@ -81,14 +80,12 @@ const UnknownOptions = (props) => {
   let opt = props.unknownOpt;
 
   return (
-    <React.Fragment>
+    <OptionGroup>
       <Title>Unknowns on</Title>
-      <OptionGroup>
-        <Option enable={opt[0]} onClick={e => props.onClickUnknown(e, U1)}>Left side</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickUnknown(e, U2)}>Right side</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickUnknown(e, U3)}>Both sides</Option>
-      </OptionGroup>
-    </React.Fragment>
+      <Option enable={opt[0]} onClick={e => props.onClickUnknown(e, U1)}>Left side</Option>
+      <Option enable={opt[1]} onClick={e => props.onClickUnknown(e, U2)}>Right side</Option>
+      <Option enable={opt[2]} onClick={e => props.onClickUnknown(e, U3)}>Both sides</Option>
+    </OptionGroup>
   );
 }
 
@@ -101,15 +98,13 @@ const PageOptions = (props) => {
   let opt = props.pageOpt;
 
   return (
-    <React.Fragment>
+    <OptionGroup>
       <Title>Pages</Title>
-      <OptionGroup>
-        <Option enable={opt[0]} onClick={e => props.onClickPage(e, P1)}>1 page</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickPage(e, P2)}>2 pages</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickPage(e, P3)}>4 pages</Option>
-        <Option enable={opt[3]} onClick={e => props.onClickPage(e, P4)}>10 pages</Option>
-      </OptionGroup>
-    </React.Fragment>
+      <Option enable={opt[0]} onClick={e => props.onClickPage(e, P1)}>1 page</Option>
+      <Option enable={opt[1]} onClick={e => props.onClickPage(e, P2)}>2 pages</Option>
+      <Option enable={opt[2]} onClick={e => props.onClickPage(e, P3)}>4 pages</Option>
+      <Option enable={opt[3]} onClick={e => props.onClickPage(e, P4)}>10 pages</Option>
+    </OptionGroup>
   );
 }
 
