@@ -18,8 +18,8 @@ const Frame = styled.div`
   and (max-device-width: 812px) 
   and (-webkit-min-device-pixel-ratio: 3)
   and (orientation: portrait) { 
-    font-size: 50%;
-    zoom: 50%;
+    font-size: 30%;
+    zoom: 40%;
 }
 
 `;
