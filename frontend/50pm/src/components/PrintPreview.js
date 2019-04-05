@@ -8,12 +8,19 @@ import {
 import EquationList from '../components/EquationList';
 
 const Frame = styled.div`
-  @media screen {
+  @media only screen {
     min-width: 250mm;
     margin: 1ex .5em;
     padding: 3ex 0;
-    /*border: 1px solid black;*/
   }
+  @media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    zoom: 50%;
+}
+
 `;
 
 const PrintPreview = (props) => {
