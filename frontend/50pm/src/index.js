@@ -16,7 +16,6 @@ console.log('process.env = ', process.env);
 let cnzz_protocol = (("https:" === document.location.protocol) ? "https://" : "http://");
 
 document.write(
-  "<span style='display: none' id='cnzz_stat_icon_" + process.env.REACT_APP_CNZZ_ID + "'></span>" + 
   "<script " + 
       "src='" + cnzz_protocol + "s5.cnzz.com/z_stat.php?id=" + process.env.REACT_APP_CNZZ_ID + "&show=pic1' " + 
       "type='text/javascript'>" + 

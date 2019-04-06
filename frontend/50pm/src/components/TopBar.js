@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+
+import * as defaults from '../lib/defaults';
 
 // Constants
 
@@ -7,7 +11,6 @@ import styled from 'styled-components';
 
 const Frame = styled.div`
   margin: 1ex .5em;
-  /*border: 1px solid black;*/
 
   @media print {
     display: none;
@@ -22,12 +25,83 @@ const Title = styled.h2`
   text-align: center;
 `;
 
+const IconSet = styled.div`
+  
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+`;
+
+const ActionIcon = styled.div`
+  flex: 0 1;
+  margin: .2ex .2em;
+  color: ${props => props.highlight ? 'black' : 'grey'};
+  
+  :hover {
+    cursor: pointer;
+  }
+`;
+
+const InfoBlock = styled.div`
+  display: ${props => props.show ? 'block' : 'none'};
+  margin-top: 1em;
+  padding: .5ex 1em;
+  border: 1px solid black;
+
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 100;
+  text-align: justify;
+`;
+
+const DisclaimerBlock = styled.div`
+  font-size: 50%;
+  text-align: center;
+`;
+
 // Components
 
+const QuestionIcon = (props) => {
+  return (
+    <ActionIcon highlight={props.highlight} onClick={props.onClick}>
+      <FontAwesomeIcon icon={faQuestionCircle}/>
+    </ActionIcon>
+  );
+}
+
 const TopBar = () => {
+  const [questionIconState, setQuestionIconState] = useState(defaults.iconStates.questionIcon);
+
+  const onClickQuestionIcon = (e) => {
+    setQuestionIconState(!questionIconState);
+  } 
+
   return (
     <Frame>
       <Title>Fifty Plus Minus</Title>
+      <IconSet>
+        <QuestionIcon highlight={questionIconState} onClick={onClickQuestionIcon}/>
+      </IconSet>
+      <InfoBlock show={questionIconState}>
+        <p>
+          Fifty Plus Minus generates 50 random simple arithmetic equations with unknowns on either side of the
+          equal sign for parents to print on a A4 paper. To print, just use your browser's own print menu. You 
+          may need to <strong>turn off page margins</strong> added by your browser to fit everything in.
+        </p>
+        <br/>
+        <DisclaimerBlock>
+          <p>
+            This websites uses CNZZ web tracking <span id={'cnzz_stat_icon_' + process.env.REACT_APP_CNZZ_ID}/>
+            &nbsp; to help understand how you use it so we can improve. 
+          </p>
+          <p>
+            No cookie is used at moment. We plan to add cookie in the next release to improve user experience, 
+            such as saving your options for next use.
+          </p>
+          <p>
+            This website is registered and hosted in China. Registration number: 沪ICP备18046429号-1
+          </p>
+        </DisclaimerBlock>
+      </InfoBlock>
     </Frame>
   );
 }
