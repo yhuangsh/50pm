@@ -7,14 +7,13 @@ import styled from 'styled-components';
 
 const Frame = styled.div`
   margin: 1ex .5em;
- /* border: 1px solid black;*/
 
   @media print {
     display: none;
   }
 `;
 
-const Title = styled.h3`
+const Title = styled.h4`
   font-family: 'Montserrat', sans-serif;
   font-weight: 100;
   text-align: center;
@@ -27,7 +26,7 @@ const OptionGroup = styled.div`
   align-items: baseline;
 `;
 
-const Option = styled.h4`
+const Option = styled.h5`
   flex: 1;
 
   color: ${props => props.enable ? 'black' : 'grey'};
@@ -54,7 +53,7 @@ const DigitOptions = (props) => {
 
   return (
     <React.Fragment>
-      <Title>Digits</Title>
+      <Title>... Digits ...</Title>
       <OptionGroup>
         <Option enable={opt[0]} onClick={e => props.onClickDigit(e, D1)}>1 digit</Option>
         <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>2 digits</Option>
@@ -73,7 +72,7 @@ const UnknownOptions = (props) => {
 
   return (
     <React.Fragment>
-      <Title>Unknowns on</Title>
+      <Title>... Unknowns on ...</Title>
       <OptionGroup>
         <Option enable={opt[0]} onClick={e => props.onClickUnknown(e, U1)}>Left side</Option>
         <Option enable={opt[1]} onClick={e => props.onClickUnknown(e, U2)}>Right side</Option>
@@ -93,7 +92,7 @@ const PageOptions = (props) => {
 
   return (
     <React.Fragment>
-      <Title>Pages</Title>
+      <Title>... Pages ...</Title>
       <OptionGroup>
         <Option enable={opt[0]} onClick={e => props.onClickPage(e, P1)}>1 page</Option>
         <Option enable={opt[1]} onClick={e => props.onClickPage(e, P2)}>2 pages</Option>
