@@ -8,7 +8,7 @@ function genEqus(n, digitOpt, unknownOpt) {
     equs.push(equ);
   }
 
-  console.log('genEqus.length = ', equs.length);
+  //console.log('genEqus.length = ', equs.length);
   return {id: shortid.generate(), equs: equs};
 }
 
@@ -18,7 +18,7 @@ function genEqusList(m, n, digitOpt, unknownOpt) {
     equsList.push(genEqus(n, digitOpt, unknownOpt));
   }
 
-  console.log('genEqusList.length = ', equsList.length);
+  //console.log('genEqusList.length = ', equsList.length);
   return equsList;
 }
 

@@ -28,8 +28,8 @@ const PrintPreview = (props) => {
   let equs = props.equs;
   let lastEqu = equs.pop();
 
-  console.log('PrintPreview: equs = ', equs);
-  console.log('PrintPreview: lastEqu = ', lastEqu);
+  //console.log('PrintPreview: equs = ', equs);
+  //console.log('PrintPreview: lastEqu = ', lastEqu);
   return (
     <Frame>
       {equs.map(x => (

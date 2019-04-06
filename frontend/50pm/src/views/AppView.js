@@ -6,7 +6,6 @@ import SettingsPanel from '../components/SettingsPanel';
 import PrintPreview from '../components/PrintPreview';
 
 import * as defaults from '../lib/defaults';
-
 import { genEqusList } from '../lib/equ';
 
 // Constants
@@ -29,19 +28,19 @@ const AppView = () => {
   const onClickDigit = (e, newDigitOpt) => {
     setDigitOpt(newDigitOpt);
     setEqus(genEqusList(pages(pageOpt), 50, newDigitOpt, unknownOpt));
-    console.log('AppView.onClickDigit: newDigitOpt = ', newDigitOpt);
+    //console.log('AppView.onClickDigit: newDigitOpt = ', newDigitOpt);
   }
 
   const onClickUnknown = (e, newUnknownOpt) => {
     setUnknownOpt(newUnknownOpt);
     setEqus(genEqusList(pages(pageOpt), 50, digitOpt, newUnknownOpt));
-    console.log('AppView.onClickUnknown: newUnknownOpt =', newUnknownOpt);
+    //console.log('AppView.onClickUnknown: newUnknownOpt =', newUnknownOpt);
   }
 
   const onClickPage = (e, newPageOpt) => {
     setPageOpt(newPageOpt);
     setEqus(genEqusList(pages(newPageOpt), 50, digitOpt, unknownOpt));
-    console.log('AppView.onClickPage: newPageOpt =', newPageOpt);
+    //console.log('AppView.onClickPage: newPageOpt =', newPageOpt);
   }
 
   return (

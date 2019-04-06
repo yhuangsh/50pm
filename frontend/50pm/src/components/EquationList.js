@@ -41,7 +41,7 @@ const Grid = styled.div`
 const EquationList = (props) => {
   let equs = props.equs;
 
-  console.log("EquationList props.equs = ", equs);
+  //console.log("EquationList props.equs = ", equs);
 
   return (
     <Frame>
