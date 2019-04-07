@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fiftypm_api-staging
+spec:
+  serviceName: "fiftypm_api-staging"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fiftypm_api-staging
+  template:
+    metadata:
+      labels:
+        app: fiftypm_api-staging
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: fiftypm_api-staging
+        image: yhuangsh/fiftypm_api:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: fiftypm_api-staging
+        livenessProbe:
+          httpGet:
+            path: /50pm/api/v1/probes/live
+            port: 8000
+            httpHeaders:
+            - name: X-fiftypm_api-Probe-Header
+              value: live
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /50pm/api/v1/probes/ready
+            port: 8000
+            httpHeaders:
+            - name: X-fiftypm_api-Probe-Header
+              value: ready
+          initialDelaySeconds: 3
+          periodSeconds: 10
+
