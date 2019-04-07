@@ -11,5 +11,5 @@ docker run \
     --add-host fiftypm_api-staging-1.fiftypm_api-staging.default.svc.cluster.local:172.29.0.3 \
     --add-host fiftypm_api-staging-2.fiftypm_api-staging.default.svc.cluster.local:172.29.0.4 \
     -p 8002:8000 \
-    -it yhuangsh/fiftypm_api-staging-dev-build:latest \
+    -it yhuangsh/fiftypm_api:latest \
     /deploy/fiftypm_api-staging/bin/fiftypm_api-staging console
