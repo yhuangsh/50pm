@@ -1,0 +1,17 @@
+{application, fiftypm_api,
+ [{description, "Fifty Plus Minus"},
+  {vsn, "0.3.0"},
+  {registered, []},
+  {mod, { fiftypm_api_app, []}},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+  {maintainers, []},
+  {licenses, ["MIT License"]},
+  {links, []},
+
+  {env,[{prefix, "/50pm"}]}
+ ]}.
