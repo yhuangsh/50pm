@@ -3,7 +3,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module(fiftypm_app).
+-module(fiftypm_api_app).
 
 -behaviour(application).
 

@@ -1,4 +1,4 @@
--module(fiftypm_badreq).
+-module(fiftypm_api_badreq).
 
 -export([init/2]).
 

@@ -1,4 +1,4 @@
--module(fiftypm_probes).
+-module(fiftypm_api_probes).
 
 -export([init/2]).
 

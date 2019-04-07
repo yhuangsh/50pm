@@ -1,4 +1,4 @@
--module(fiftypm_main).
+-module(fiftypm_api_main).
 -behaviour(gen_server).
 
 -export([start_link/0]).

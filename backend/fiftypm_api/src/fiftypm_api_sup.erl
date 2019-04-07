@@ -3,7 +3,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module(fiftypm_sup).
+-module(fiftypm_api_sup).
 
 -behaviour(supervisor).
 
