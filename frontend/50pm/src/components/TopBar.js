@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+import { 
+  faQuestionCircle, 
+  faTimesCircle, 
+  faPlusSquare 
+} from '@fortawesome/free-regular-svg-icons'
 
 import * as defaults from '../lib/defaults';
 
@@ -34,8 +38,8 @@ const IconSet = styled.div`
 
 const ActionIcon = styled.div`
   flex: 0 1;
-  margin: .2ex .2em;
-  color: ${props => props.highlight ? 'black' : 'grey'};
+  margin: .2ex .5em;
+  color: black;
   
   :hover {
     cursor: pointer;
@@ -63,25 +67,44 @@ const DisclaimerBlock = styled.div`
 const QuestionIcon = (props) => {
   return (
     <ActionIcon highlight={props.highlight} onClick={props.onClick}>
-      <FontAwesomeIcon icon={faQuestionCircle}/>
+      <FontAwesomeIcon icon={faQuestionCircle} />
     </ActionIcon>
   );
 }
 
-const TopBar = () => {
-  const [questionIconState, setQuestionIconState] = useState(defaults.iconStates.questionIcon);
+const PlusOrTimesIcon = (props) => {
+  const mode = props.mode;
+  const onClick = props.onClick;
+
+  return (
+    <ActionIcon onClick={onClick}>
+      <FontAwesomeIcon icon={mode === defaults.PM_MODE ? faTimesCircle : faPlusSquare} />
+    </ActionIcon>
+  )
+}
+
+const TopBar = (props) => {
+  // Cascafed States
+
+  const mode = props.mode;
+  const title = defaults.titles[mode];
+  const onClickTimesOrPlusIcon = props.onClickTimesOrPlusIcon;
+  
+  // Local States
+  const [showHelp, setShowHelp] = useState(defaults.showHelp);
 
   const onClickQuestionIcon = (e) => {
-    setQuestionIconState(!questionIconState);
+    setShowHelp(!showHelp);
   } 
 
   return (
     <Frame>
-      <Title>Fifty Plus Minus</Title>
+      <Title>{title}</Title>
       <IconSet>
-        <QuestionIcon highlight={questionIconState} onClick={onClickQuestionIcon}/>
+        <PlusOrTimesIcon mode={mode} onClick={onClickTimesOrPlusIcon} />
+        <QuestionIcon onClick={onClickQuestionIcon} />
       </IconSet>
-      <InfoBlock show={questionIconState}>
+      <InfoBlock show={showHelp}>
         <p>
           Fifty Plus Minus generates 50 random simple arithmetic equations with unknowns on either side of the
           equal sign for parents to print on a A4 paper. To print, just use your browser's own print menu. You 

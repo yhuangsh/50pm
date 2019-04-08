@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import * as defaults from '../lib/defaults';
+
 // Constants
 
 // Stylings
@@ -49,7 +51,7 @@ const DigitOptions = (props) => {
   const D2 = [false, true, false];
   const D3 = [false, false, true];
 
-  let opt = props.digitOpt;
+  const opt = props.digitOpt;
 
   return (
     <React.Fragment>
@@ -63,12 +65,31 @@ const DigitOptions = (props) => {
   );
 }
 
+const DigitOptionsForTimes = (props) => {
+  const D1 = [true, false, false];
+  const D2 = [false, true, false];
+  const D3 = [false, false, true];
+
+  const opt = props.digitOptForTimes;
+
+  return (
+    <React.Fragment>
+      <Title>... Digits ...</Title>
+      <OptionGroup>
+        <Option enable={opt[0]} onClick={e => props.onClickDigitForTimes(e, D1)}>1 digit</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickDigitForTimes(e, D2)}>2 digits x 1 digit</Option>
+        <Option enable={opt[2]} onClick={e => props.onClickDigitForTimes(e, D3)}>2 digits x 2 digits</Option>
+      </OptionGroup>
+    </React.Fragment>
+  );
+}
+
 const UnknownOptions = (props) => {
   const U1 = [true, false, false];
   const U2 = [false, true, false];
   const U3 = [false, false, true];
 
-  let opt = props.unknownOpt;
+  const opt = props.unknownOpt;
 
   return (
     <React.Fragment>
@@ -104,11 +125,15 @@ const PageOptions = (props) => {
 }
 
 const SettingsPanel = (props) => {
+  const { mode, ...restprops } = props;
+
   return (
     <Frame>
-      <DigitOptions {...props} />
-      <UnknownOptions {...props} />
-      <PageOptions {...props} />
+      {(mode === defaults.PM_MODE ? 
+        <DigitOptions {...restprops} /> :
+        <DigitOptionsForTimes {...restprops} />)}
+      <UnknownOptions {...restprops} />
+      <PageOptions {...restprops} />
     </Frame>
   );
 }

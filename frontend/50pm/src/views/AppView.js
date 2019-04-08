@@ -19,16 +19,33 @@ const Frame = styled.div`
 // Components
 
 const AppView = () => {
-  let [digitOpt, setDigitOpt] = useState(defaults.digits);
-  let [unknownOpt, setUnknownOpt] = useState(defaults.unknowns);
-  let [pageOpt, setPageOpt] = useState(defaults.pages);
+  const [mode, setMode] = useState(defaults.PM_MODE);
 
-  let [equs, setEqus] = useState(genEqusList(pages(pageOpt), 50, digitOpt, unknownOpt));
+  const [digitOpt, setDigitOpt] = useState(defaults.digits);
+  const [digitOptForTimes, setDigitOptForTimes] = useState(defaults.digitsForTimes);
+  const [unknownOpt, setUnknownOpt] = useState(defaults.unknowns);
+  const [pageOpt, setPageOpt] = useState(defaults.pages);
+
+  const [equs, setEqus] = useState(genEqusList(pages(pageOpt), 50, digitOpt, unknownOpt));
+
+  const onClickTimesOrPlusIcon = (e) => {
+    console.log('onClickTimesOrPlusIcon: mode = ', mode);
+    if (mode === defaults.PM_MODE) 
+      setMode(defaults.TD_MODE);
+    else
+      setMode(defaults.PM_MODE);
+  }
 
   const onClickDigit = (e, newDigitOpt) => {
     setDigitOpt(newDigitOpt);
     setEqus(genEqusList(pages(pageOpt), 50, newDigitOpt, unknownOpt));
     //console.log('AppView.onClickDigit: newDigitOpt = ', newDigitOpt);
+  }
+
+  const onClickDigitForTimes = (e, newDigitOptForTimes) => {
+    setDigitOptForTimes(newDigitOptForTimes);
+    setEqus(genEqusList(pages(pageOpt), 50, newDigitOptForTimes, unknownOpt));
+    console.log('AppView.onClickDigitForTimes: newDigitOptForTimes = ', newDigitOptForTimes);
   }
 
   const onClickUnknown = (e, newUnknownOpt) => {
@@ -45,9 +62,13 @@ const AppView = () => {
 
   return (
     <Frame>
-      <TopBar />
+      <TopBar 
+        mode={mode} 
+        onClickTimesOrPlusIcon={onClickTimesOrPlusIcon}/>
       <SettingsPanel 
+        mode={mode}
         digitOpt={digitOpt} onClickDigit={onClickDigit}
+        digitOptForTimes={digitOptForTimes} onClickDigitForTimes={onClickDigitForTimes}
         unknownOpt={unknownOpt} onClickUnknown={onClickUnknown}
         pageOpt={pageOpt} onClickPage={onClickPage}
       />
