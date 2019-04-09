@@ -26,37 +26,43 @@ const AppView = () => {
   const [unknownOpt, setUnknownOpt] = useState(defaults.unknowns);
   const [pageOpt, setPageOpt] = useState(defaults.pages);
 
-  const [equs, setEqus] = useState(genEqusList(pages(pageOpt), 50, digitOpt, unknownOpt));
+  const [equs, setEqus] = useState(genEqusList(mode, pages(pageOpt), 50, digitOpt, unknownOpt));
 
   const onClickTimesOrPlusIcon = (e) => {
     console.log('onClickTimesOrPlusIcon: mode = ', mode);
-    if (mode === defaults.PM_MODE) 
+    if (mode === defaults.PM_MODE) {
       setMode(defaults.TD_MODE);
-    else
+      let x = genEqusList(defaults.TD_MODE, pages(pageOpt), 50, digitOptForTimes, unknownOpt);
+      setEqus(x);
+      console.log('x = ', x);
+    }
+    else {
       setMode(defaults.PM_MODE);
+      setEqus(genEqusList(defaults.PM_MODE, pages(pageOpt), 50, digitOpt, unknownOpt));
+    }
   }
 
   const onClickDigit = (e, newDigitOpt) => {
     setDigitOpt(newDigitOpt);
-    setEqus(genEqusList(pages(pageOpt), 50, newDigitOpt, unknownOpt));
+    setEqus(genEqusList(mode, pages(pageOpt), 50, newDigitOpt, unknownOpt));
     //console.log('AppView.onClickDigit: newDigitOpt = ', newDigitOpt);
   }
 
   const onClickDigitForTimes = (e, newDigitOptForTimes) => {
     setDigitOptForTimes(newDigitOptForTimes);
-    setEqus(genEqusList(pages(pageOpt), 50, newDigitOptForTimes, unknownOpt));
+    setEqus(genEqusList(mode, pages(pageOpt), 50, newDigitOptForTimes, unknownOpt));
     console.log('AppView.onClickDigitForTimes: newDigitOptForTimes = ', newDigitOptForTimes);
   }
 
   const onClickUnknown = (e, newUnknownOpt) => {
     setUnknownOpt(newUnknownOpt);
-    setEqus(genEqusList(pages(pageOpt), 50, digitOpt, newUnknownOpt));
+    setEqus(genEqusList(mode, pages(pageOpt), 50, digitOpt, newUnknownOpt));
     //console.log('AppView.onClickUnknown: newUnknownOpt =', newUnknownOpt);
   }
 
   const onClickPage = (e, newPageOpt) => {
     setPageOpt(newPageOpt);
-    setEqus(genEqusList(pages(newPageOpt), 50, digitOpt, unknownOpt));
+    setEqus(genEqusList(mode, pages(newPageOpt), 50, digitOpt, unknownOpt));
     //console.log('AppView.onClickPage: newPageOpt =', newPageOpt);
   }
 

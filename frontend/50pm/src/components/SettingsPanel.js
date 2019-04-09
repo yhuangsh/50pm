@@ -109,7 +109,7 @@ const PageOptions = (props) => {
   const P3 = [false, false, true, false];
   const P4 = [false, false, false, true];
 
-  let opt = props.pageOpt;
+  const opt = props.pageOpt;
 
   return (
     <React.Fragment>
@@ -127,11 +127,14 @@ const PageOptions = (props) => {
 const SettingsPanel = (props) => {
   const { mode, ...restprops } = props;
 
+  const DigitOptionsComponent = 
+    (mode === defaults.PM_MODE ? 
+    <DigitOptions {...restprops} /> :
+    <DigitOptionsForTimes {...restprops} />);
+
   return (
     <Frame>
-      {(mode === defaults.PM_MODE ? 
-        <DigitOptions {...restprops} /> :
-        <DigitOptionsForTimes {...restprops} />)}
+      {DigitOptionsComponent}
       <UnknownOptions {...restprops} />
       <PageOptions {...restprops} />
     </Frame>

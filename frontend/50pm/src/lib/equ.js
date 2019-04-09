@@ -1,10 +1,18 @@
 import shortid from 'shortid';
+import * as defaults from '../lib/defaults';
 
-function genEqus(n, digitOpt, unknownOpt) {
+function genEqusList(mode, m, n, digitOpt, unknownOpt) {
+  if (mode === defaults.PM_MODE)
+    return genEqusListPM(m, n, digitOpt, unknownOpt);
+  else
+    return genEqusListTD(m, n, digitOpt, unknownOpt);
+}
+
+function genEqusPM(n, digitOpt, unknownOpt) {
   let equs = [];
 
   for (let i = 0; i < n; i++) {
-    let equ = genRandomEqu(digitOpt, unknownOpt);
+    let equ = genRandomEquPM(digitOpt, unknownOpt);
     equs.push(equ);
   }
 
@@ -12,21 +20,49 @@ function genEqus(n, digitOpt, unknownOpt) {
   return {id: shortid.generate(), equs: equs};
 }
 
-function genEqusList(m, n, digitOpt, unknownOpt) {
+function genEqusListPM(m, n, digitOpt, unknownOpt) {
   let equsList = [];
   for (let i = 0; i < m; i++) {
-    equsList.push(genEqus(n, digitOpt, unknownOpt));
+    equsList.push(genEqusPM(n, digitOpt, unknownOpt));
   }
 
   //console.log('genEqusList.length = ', equsList.length);
   return equsList;
 }
 
-export { genEqus, genEqusList };
+function genEqusTD(n, digitOptForTimes, unknownOpt) {
+  let equs = [];
+
+  for (let i = 0; i < n; i++) {
+    let equ = genRandomEquTD(digitOptForTimes, unknownOpt);
+    equs.push(equ);
+  }
+
+  //console.log('n = ', n);
+  //console.log('genEqusTD.length =', equs.length);
+  return {id: shortid.generate(), equs: equs};
+}
+
+function genEqusListTD(m, n, digitOptForTimes, unknownOpt) {
+  let equsList = [];
+  for (let i = 0; i < m; i++) {
+    equsList.push(genEqusTD(n, digitOptForTimes, unknownOpt));
+  }
+
+  console.log('m = ', m);
+  console.log('genEqusList.length = ', equsList.length);
+  return equsList;
+}
+
+export { 
+  genEqusList, 
+  genEqusPM, genEqusTD, 
+  genEqusListPM, genEqusListTD 
+};
 
 // Utilities
 
-function genRandomEqu(digitOpt, unknownOpt) {
+function genRandomEquPM(digitOpt, unknownOpt) {
   let n1x = 0, n2x = 0;
   if (digitOpt[0] === true && digitOpt[1] === false && digitOpt[2] === false) {
     n1x = genRandomInt(0, 10);
@@ -89,4 +125,49 @@ function adjustUnknown([n1, n2, n3], unknownOpt) {
   }
 }
 
+function genRandomEquTD(digitOptForTimes, unknownOpt) {
+  let n1x = 0, n2x = 0;
+  if (digitOptForTimes[0] === true && digitOptForTimes[1] === false && digitOptForTimes[2] === false) {
+    n1x = genRandomInt(0, 10);
+    n2x = genRandomInt(1, 10);
+  } else if (digitOptForTimes[0] === false && digitOptForTimes[1] === true && digitOptForTimes[2] === false) {
+    n1x = genRandomInt(0, 10);
+    n2x = genRandomInt(10, 100);
+  } else {
+    n1x = genRandomInt(10, 100);
+    n2x = genRandomInt(10, 100);
+  }
 
+  //console.log('digitOptForTimes = ', digitOptForTimes);
+  //console.log('genRandomEqu: [n1x, n2x] = ', n1x, n2x);
+
+  let op = genRandomInt(2, 4);
+  let numbers = adjustN1N2TD(n1x, n2x, op);
+  let [n1, n2, n3] = adjustUnknown(numbers, unknownOpt);
+
+  return {id: shortid.generate(), equ: [n1, op, n2, n3]};
+}
+
+function adjustN1N2TD(n1, n2, op) {
+  const n3x = n1 * n2;
+  let n1x = n1;
+  let n2x = n2;
+  let order = genRandomInt(0, 2);
+  if (order === 0) {
+    n1x = n2;
+    n2x = n1;
+  }
+
+  if (op === 2) 
+    return [n1x, n2x, n3x];
+  else if (op === 3)
+    if (n1x === 0)
+      return [n3x, n2x, n1x];
+    else 
+      return [n3x, n1x, n2x];
+  else
+  {
+    console.log("ERROR: operation beyond x,/ not supported yet!");
+    return [null, null, null];
+  }   
+}
