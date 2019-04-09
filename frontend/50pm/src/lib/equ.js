@@ -49,8 +49,8 @@ function genEqusListTD(m, n, digitOptForTimes, unknownOpt) {
     equsList.push(genEqusTD(n, digitOptForTimes, unknownOpt));
   }
 
-  console.log('m = ', m);
-  console.log('genEqusList.length = ', equsList.length);
+  //console.log('m = ', m);
+  //console.log('genEqusList.length = ', equsList.length);
   return equsList;
 }
 

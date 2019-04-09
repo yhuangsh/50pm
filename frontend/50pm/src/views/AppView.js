@@ -22,36 +22,25 @@ const AppView = () => {
   const [mode, setMode] = useState(defaults.PM_MODE);
 
   const [digitOpt, setDigitOpt] = useState(defaults.digits);
-  const [digitOptForTimes, setDigitOptForTimes] = useState(defaults.digitsForTimes);
   const [unknownOpt, setUnknownOpt] = useState(defaults.unknowns);
   const [pageOpt, setPageOpt] = useState(defaults.pages);
 
   const [equs, setEqus] = useState(genEqusList(mode, pages(pageOpt), 50, digitOpt, unknownOpt));
 
   const onClickTimesOrPlusIcon = (e) => {
-    console.log('onClickTimesOrPlusIcon: mode = ', mode);
-    if (mode === defaults.PM_MODE) {
-      setMode(defaults.TD_MODE);
-      let x = genEqusList(defaults.TD_MODE, pages(pageOpt), 50, digitOptForTimes, unknownOpt);
-      setEqus(x);
-      console.log('x = ', x);
-    }
-    else {
-      setMode(defaults.PM_MODE);
-      setEqus(genEqusList(defaults.PM_MODE, pages(pageOpt), 50, digitOpt, unknownOpt));
-    }
+    //console.log('onClickTimesOrPlusIcon: mode = ', mode);
+    let newMode = defaults.PM_MODE;
+    if (mode === defaults.PM_MODE) 
+      newMode = defaults.TD_MODE;
+    
+    setMode(newMode);
+    setEqus(genEqusList(newMode, pages(pageOpt), 50, digitOpt, unknownOpt));
   }
 
   const onClickDigit = (e, newDigitOpt) => {
     setDigitOpt(newDigitOpt);
     setEqus(genEqusList(mode, pages(pageOpt), 50, newDigitOpt, unknownOpt));
     //console.log('AppView.onClickDigit: newDigitOpt = ', newDigitOpt);
-  }
-
-  const onClickDigitForTimes = (e, newDigitOptForTimes) => {
-    setDigitOptForTimes(newDigitOptForTimes);
-    setEqus(genEqusList(mode, pages(pageOpt), 50, newDigitOptForTimes, unknownOpt));
-    console.log('AppView.onClickDigitForTimes: newDigitOptForTimes = ', newDigitOptForTimes);
   }
 
   const onClickUnknown = (e, newUnknownOpt) => {
@@ -74,7 +63,7 @@ const AppView = () => {
       <SettingsPanel 
         mode={mode}
         digitOpt={digitOpt} onClickDigit={onClickDigit}
-        digitOptForTimes={digitOptForTimes} onClickDigitForTimes={onClickDigitForTimes}
+        digitOptForTimes={digitOpt} onClickDigitForTimes={onClickDigit}
         unknownOpt={unknownOpt} onClickUnknown={onClickUnknown}
         pageOpt={pageOpt} onClickPage={onClickPage}
       />

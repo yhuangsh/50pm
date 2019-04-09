@@ -47,6 +47,7 @@ const Option = styled.h5`
 // Components
 
 const DigitOptions = (props) => {
+  const mode = props.mode;
   const D1 = [true, false, false];
   const D2 = [false, true, false];
   const D3 = [false, false, true];
@@ -58,27 +59,8 @@ const DigitOptions = (props) => {
       <Title>... Digits ...</Title>
       <OptionGroup>
         <Option enable={opt[0]} onClick={e => props.onClickDigit(e, D1)}>1 digit</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>2 digits</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickDigit(e, D3)}>3 digits</Option>
-      </OptionGroup>
-    </React.Fragment>
-  );
-}
-
-const DigitOptionsForTimes = (props) => {
-  const D1 = [true, false, false];
-  const D2 = [false, true, false];
-  const D3 = [false, false, true];
-
-  const opt = props.digitOptForTimes;
-
-  return (
-    <React.Fragment>
-      <Title>... Digits ...</Title>
-      <OptionGroup>
-        <Option enable={opt[0]} onClick={e => props.onClickDigitForTimes(e, D1)}>1 digit</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickDigitForTimes(e, D2)}>2 digits x 1 digit</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickDigitForTimes(e, D3)}>2 digits x 2 digits</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>{mode === defaults.PM_MODE ? '2 digits' : '2 digits x 1 digit'}</Option>
+        <Option enable={opt[2]} onClick={e => props.onClickDigit(e, D3)}>{mode === defaults.PM_MODE ? '3 digits' : '2 digits x 2 digitx'}</Option>
       </OptionGroup>
     </React.Fragment>
   );
@@ -125,18 +107,11 @@ const PageOptions = (props) => {
 }
 
 const SettingsPanel = (props) => {
-  const { mode, ...restprops } = props;
-
-  const DigitOptionsComponent = 
-    (mode === defaults.PM_MODE ? 
-    <DigitOptions {...restprops} /> :
-    <DigitOptionsForTimes {...restprops} />);
-
   return (
     <Frame>
-      {DigitOptionsComponent}
-      <UnknownOptions {...restprops} />
-      <PageOptions {...restprops} />
+      <DigitOptions {...props} /> 
+      <UnknownOptions {...props} />
+      <PageOptions {...props} />
     </Frame>
   );
 }
