@@ -4,8 +4,8 @@
 
 ## v0.3
 
+- Add times and divides
 - Add version number of info page
-- Move to erlang backend
 
 ## v0.2 (_current_)
 
