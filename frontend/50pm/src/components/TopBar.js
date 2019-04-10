@@ -84,12 +84,6 @@ const PlusOrTimesIcon = (props) => {
 }
 
 const TopBar = (props) => {
-  // Cascafed States
-
-  const mode = props.mode;
-  const title = defaults.titles[mode];
-  const onClickTimesOrPlusIcon = props.onClickTimesOrPlusIcon;
-  
   // Local States
   const [showHelp, setShowHelp] = useState(defaults.showHelp);
 
@@ -99,9 +93,8 @@ const TopBar = (props) => {
 
   return (
     <Frame>
-      <Title>{title}</Title>
+      <Title>Fifty Plus Minus</Title>
       <IconSet>
-        <PlusOrTimesIcon mode={mode} onClick={onClickTimesOrPlusIcon} />
         <QuestionIcon onClick={onClickQuestionIcon} />
       </IconSet>
       <InfoBlock show={showHelp}>

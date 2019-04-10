@@ -46,30 +46,47 @@ const Option = styled.h5`
 
 // Components
 
-const DigitOptions = (props) => {
-  const mode = props.mode;
-  const D1 = [true, false, false];
-  const D2 = [false, true, false];
-  const D3 = [false, false, true];
+const PMTDOptions = (props) => {
+  const O1 = [true, false];
+  const O2 = [false, true];
 
+  const opt = props.pmtdOpt;
+
+  return (
+    <React.Fragment>
+      <Title>... Calculation ...</Title>
+      <OptionGroup>
+        <Option enable={opt[0]} onClick={e => props.onClickPmtd(e, O1)}>Plus & Minus</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickPmtd(e, O2)}>Times & Divides</Option>
+      </OptionGroup>
+    </React.Fragment>
+  );
+}
+
+const DigitOptions = (props) => {
+  const O1 = [true, false, false];
+  const O2 = [false, true, false];
+  const O3 = [false, false, true];
+
+  const digitOptTexts = getDigitOptText(props.pmtdOpt);
   const opt = props.digitOpt;
 
   return (
     <React.Fragment>
       <Title>... Digits ...</Title>
       <OptionGroup>
-        <Option enable={opt[0]} onClick={e => props.onClickDigit(e, D1)}>1 digit</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickDigit(e, D2)}>{mode === defaults.PM_MODE ? '2 digits' : '2 digits x 1 digit'}</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickDigit(e, D3)}>{mode === defaults.PM_MODE ? '3 digits' : '2 digits x 2 digitx'}</Option>
+        <Option enable={opt[0]} onClick={e => props.onClickDigit(e, O1)}>{digitOptTexts[0]}</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickDigit(e, O2)}>{digitOptTexts[1]}</Option>
+        <Option enable={opt[2]} onClick={e => props.onClickDigit(e, O3)}>{digitOptTexts[2]}</Option>
       </OptionGroup>
     </React.Fragment>
   );
 }
 
 const UnknownOptions = (props) => {
-  const U1 = [true, false, false];
-  const U2 = [false, true, false];
-  const U3 = [false, false, true];
+  const O1 = [true, false, false];
+  const O2 = [false, true, false];
+  const O3 = [false, false, true];
 
   const opt = props.unknownOpt;
 
@@ -77,9 +94,9 @@ const UnknownOptions = (props) => {
     <React.Fragment>
       <Title>... Unknowns on ...</Title>
       <OptionGroup>
-        <Option enable={opt[0]} onClick={e => props.onClickUnknown(e, U1)}>Left side</Option>
-        <Option enable={opt[1]} onClick={e => props.onClickUnknown(e, U2)}>Right side</Option>
-        <Option enable={opt[2]} onClick={e => props.onClickUnknown(e, U3)}>Both sides</Option>
+        <Option enable={opt[0]} onClick={e => props.onClickUnknown(e, O1)}>Left side</Option>
+        <Option enable={opt[1]} onClick={e => props.onClickUnknown(e, O2)}>Right side</Option>
+        <Option enable={opt[2]} onClick={e => props.onClickUnknown(e, O3)}>Both sides</Option>
       </OptionGroup>
     </React.Fragment>
   );
@@ -109,6 +126,7 @@ const PageOptions = (props) => {
 const SettingsPanel = (props) => {
   return (
     <Frame>
+      <PMTDOptions {...props} />
       <DigitOptions {...props} /> 
       <UnknownOptions {...props} />
       <PageOptions {...props} />
@@ -119,3 +137,13 @@ const SettingsPanel = (props) => {
 export default SettingsPanel;
 
 // Utilities
+
+const getDigitOptText = (pmtdOpt) => {
+  const [p1, p2] = pmtdOpt;
+
+  if (p1) return ['1 digit', '2 digits', '3 digits'];
+  if (p2) return ['1 digit', '2 digits x 1 digit', '2 digits x 2 digits'];
+
+  console.log('getDigitOptText ERROR: bad pmtdOpt');
+  return [false, false, false];
+}

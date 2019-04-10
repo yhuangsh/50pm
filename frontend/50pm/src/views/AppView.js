@@ -19,22 +19,19 @@ const Frame = styled.div`
 // Components
 
 const AppView = () => {
-  const [mode, setMode] = useState(defaults.PM_MODE);
+  //const [mode, setMode] = useState(defaults.PM_MODE);
 
+  const [pmtdOpt, setPmtdOpt] = useState(defaults.pmtd);
   const [digitOpt, setDigitOpt] = useState(defaults.digits);
   const [unknownOpt, setUnknownOpt] = useState(defaults.unknowns);
   const [pageOpt, setPageOpt] = useState(defaults.pages);
 
-  const [equs, setEqus] = useState(genEqusList(mode, pages(pageOpt), 50, digitOpt, unknownOpt));
+  const [equs, setEqus] = useState(genEqusList(mode(pmtdOpt), pages(pageOpt), 50, digitOpt, unknownOpt));
 
-  const onClickTimesOrPlusIcon = (e) => {
-    //console.log('onClickTimesOrPlusIcon: mode = ', mode);
-    let newMode = defaults.PM_MODE;
-    if (mode === defaults.PM_MODE) 
-      newMode = defaults.TD_MODE;
-    
-    setMode(newMode);
-    setEqus(genEqusList(newMode, pages(pageOpt), 50, digitOpt, unknownOpt));
+  const onClickPmtd = (e, newPmtdOpt) => {
+    setPmtdOpt(newPmtdOpt);
+    setEqus(genEqusList(mode(newPmtdOpt), pages(pageOpt), 50, digitOpt, unknownOpt));
+    //console.log('AppView.onClickPmtd: newPmtdOpt = ', newDPmtdpt);
   }
 
   const onClickDigit = (e, newDigitOpt) => {
@@ -57,11 +54,9 @@ const AppView = () => {
 
   return (
     <Frame>
-      <TopBar 
-        mode={mode} 
-        onClickTimesOrPlusIcon={onClickTimesOrPlusIcon}/>
+      <TopBar />
       <SettingsPanel 
-        mode={mode}
+        pmtdOpt={pmtdOpt} onClickPmtd={onClickPmtd}
         digitOpt={digitOpt} onClickDigit={onClickDigit}
         digitOptForTimes={digitOpt} onClickDigitForTimes={onClickDigit}
         unknownOpt={unknownOpt} onClickUnknown={onClickUnknown}
@@ -76,8 +71,18 @@ export default AppView;
 
 // Utilities
 
+const mode = (pmtdOpt) => {
+  const [p1, p2] = pmtdOpt;
+
+  if (p1) return defaults.PM_MODE;
+  if (p2) return defaults.TD_MODE;
+
+  console.log('ERROR: bad pmtdOpt');
+  return 0;
+}
+
 const pages = (pageOpt) => {
-  let [p1, p2, p3, p4] = pageOpt;
+  const [p1, p2, p3, p4] = pageOpt;
 
   if (p1) return 1;
   if (p2) return 2;
