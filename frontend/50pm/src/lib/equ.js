@@ -1,11 +1,14 @@
 import shortid from 'shortid';
-import * as defaults from '../lib/defaults';
 
 function genEqusList(mode, m, n, digitOpt, unknownOpt) {
-  if (mode === defaults.PM_MODE)
+  if (mode[0] === true && mode[1] === false)
     return genEqusListPM(m, n, digitOpt, unknownOpt);
-  else
+  else if (mode[0] === false && mode[1] === true)
     return genEqusListTD(m, n, digitOpt, unknownOpt);
+  else {
+    console.log('genEqusList ERROR: bad mode');
+    return [];
+  }
 }
 
 function genEqusPM(n, digitOpt, unknownOpt) {

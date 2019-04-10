@@ -1,10 +1,3 @@
-export const EQU_WIDTH = '18em';
-
-export const PM_MODE = 0;
-export const TD_MODE = 1;
-
-export const titles = ['Fifty Plus Minus', 'Fifty Times Divides'];
-
 export const showHelp = false;
 
 export const pmtd = [true, false];

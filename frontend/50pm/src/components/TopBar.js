@@ -3,11 +3,9 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faQuestionCircle, 
-  faTimesCircle, 
-  faPlusSquare 
 } from '@fortawesome/free-regular-svg-icons'
 
-import * as defaults from '../lib/defaults';
+import * as defaults from '../lib/D';
 
 // Constants
 
@@ -70,17 +68,6 @@ const QuestionIcon = (props) => {
       <FontAwesomeIcon icon={faQuestionCircle} />
     </ActionIcon>
   );
-}
-
-const PlusOrTimesIcon = (props) => {
-  const mode = props.mode;
-  const onClick = props.onClick;
-
-  return (
-    <ActionIcon onClick={onClick}>
-      <FontAwesomeIcon icon={mode === defaults.PM_MODE ? faTimesCircle : faPlusSquare} />
-    </ActionIcon>
-  )
 }
 
 const TopBar = (props) => {
