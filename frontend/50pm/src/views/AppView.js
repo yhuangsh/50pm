@@ -19,8 +19,6 @@ const Frame = styled.div`
 // Components
 
 const AppView = () => {
-  //const [mode, setMode] = useState(D.PM_MODE);
-
   const [pmtdOpt, setPmtdOpt] = useState(D.pmtd);
   const [digitOpt, setDigitOpt] = useState(D.digits);
   const [unknownOpt, setUnknownOpt] = useState(D.unknowns);
