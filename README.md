@@ -2,6 +2,13 @@
 
 # 50pm - Print fifty simple plus minus questions for kids 
 
+## v0.4
+
+- Automate pulling build number from Travis into the info page
+- Automate pulling git tag name into the info page
+- Use cookie to rember options
+- Automate deploying to production with 'v.*' release tags
+
 ## v0.3 (_current_)
 
 - Add times and divides

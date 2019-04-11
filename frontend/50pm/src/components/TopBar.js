@@ -86,15 +86,15 @@ const TopBar = (props) => {
       </IconSet>
       <InfoBlock show={showHelp}>
         <p>
-          Fifty Plus Minus (v0.3) generates 50 random simple arithmetic equations with unknowns on either side of the
-          equal sign for parents to print on a A4 paper. To print, just use your browser's own print menu. You 
-          may need to <strong>turn off page margins</strong> added by your browser to fit everything in.
+          Fifty Plus Minus ({process.env.REACT_APP_VERSION}) generates 50 random simple arithmetic equations 
+          with unknowns on either side of the equal sign for parents to print on a A4 paper. To print, just 
+          use your browser's own print menu. You may need to <strong>turn off page margins</strong> added by 
+          your browser to fit everything in.
         </p>
         <ul>
-          <li>{process.env.TRAVIS_BRANCH}</li>
-          <li>{process.env.TRAVIS_TAG}</li>
-          <li>{process.env.TRAVIS_BUILD_NUMBER}</li>
-          <li>{process.env.TRAVIS_BRANCH}</li>
+          <li>{process.env.REACT_APP_BRANCH}</li>
+          <li>{process.env.REACT_APP_TAG}</li>
+          <li>{process.env.REACT_APP_BUILD_NUMBER}</li>
         </ul>
         <br/>
         <DisclaimerBlock>
