@@ -1,12 +1,11 @@
 #!/bin/sh
 
-if [ -z $1 ] 
+# On Travis, must run this script after dockerize & deploy.staging
+if [ ${TRAVIS_TAG:0:1} == 'v' ] 
 then
-  echo "missing release tag name"
-  exit
+  docker tag yhuangsh/50pm:latest yhuangsh/50pm:$TRAVIS_TAG
+  docker push yhuangsh/50pm:$TRAVIS_TAG
+  ./kubectl set image deploy/fiftypm fiftypm=yhuangsh/50pm:$TRAVIS_TAG --record
 else
-  docker pull yhuangsh/50pm:latest
-  docker tag yhuangsh/50pm:latest yhuangsh/50pm:$1
-  docker push yhuangsh/50pm:$1
-  kubectl set image deploy/fiftypm fiftypm=yhuangsh/50pm:$1 --record
+  echo "This is not a release build, skipping production deployment"
 fi

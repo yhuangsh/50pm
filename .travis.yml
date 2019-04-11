@@ -18,9 +18,8 @@ after_success:
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
   - chmod +x ./kubectl
   - openssl aes-256-cbc -K $encrypted_78aec6180b5a_key -iv $encrypted_78aec6180b5a_iv -in config.enc -out kc -d
-  - ./kubectl --kubeconfig=./kc delete svc/fiftypm-staging
-  - ./kubectl --kubeconfig=./kc delete deploy/fiftypm-staging
-  - ./kubectl --kubeconfig=./kc create -f frontend/tools/deploy.staging.yml
+  - tools/deploy.staging.sh
+  - tools/deploy.production.sh
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_APP_HOST
   - echo $TRAVIS_BUILD_DIR
