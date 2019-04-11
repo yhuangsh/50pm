@@ -90,6 +90,12 @@ const TopBar = (props) => {
           equal sign for parents to print on a A4 paper. To print, just use your browser's own print menu. You 
           may need to <strong>turn off page margins</strong> added by your browser to fit everything in.
         </p>
+        <ul>
+          <li>{process.env.TRAVIS_BRANCH}</li>
+          <li>{process.env.TRAVIS_TAG}</li>
+          <li>{process.env.TRAVIS_BUILD_NUMBER}</li>
+          <li>{process.env.TRAVIS_BRANCH}</li>
+        </ul>
         <br/>
         <DisclaimerBlock>
           <p>
