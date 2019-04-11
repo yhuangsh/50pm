@@ -2,12 +2,12 @@
 
 # 50pm - Print fifty simple plus minus questions for kids 
 
-## v0.3
+## v0.3 (_current_)
 
 - Add times and divides
-- Add version number of info page
+- Add version number in info page
 
-## v0.2 (_current_)
+## v0.2 
 
 - Add info page
 - Optimize layout for phone
