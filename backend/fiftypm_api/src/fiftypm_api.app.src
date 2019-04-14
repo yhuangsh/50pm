@@ -1,6 +1,6 @@
 {application, fiftypm_api,
- [{description, "Fifty Plus Minus"},
-  {vsn, "0.3.0"},
+ [{description, "Fifty Plus Minus API Server"},
+  {vsn, "0.1.0"},
   {registered, []},
   {mod, { fiftypm_api_app, []}},
   {applications,
@@ -13,5 +13,5 @@
   {licenses, ["MIT License"]},
   {links, []},
 
-  {env,[{prefix, "/50pm"}]}
+  {env,[{prefix, "/50pm/api"}]}
  ]}.

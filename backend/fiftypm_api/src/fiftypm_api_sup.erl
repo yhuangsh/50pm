@@ -35,5 +35,5 @@ init([]) ->
 %%====================================================================
 
 child_spec_main() ->
-    #{id => fiftypm_main, 
-      start => {fiftypm_main, start_link, []}}.
+    #{id => fiftypm_api_main, 
+      start => {fiftypm_api_main, start_link, []}}.
