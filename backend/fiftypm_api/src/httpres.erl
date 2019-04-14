@@ -1,7 +1,7 @@
 -module(httpres).
 
 -export(['200'/2, '200'/3, '200'/4,
-         '400'/2,
+         '400'/2, '400'/3, '400'/4,
          '404'/2, '404'/3, '404'/4]).
 
 -define(CT_TEXT_TEXT, <<"text/text">>).
@@ -16,6 +16,9 @@
 '200'(json, T, R, S) -> reply(200, ?CT_APPLICATION_JSON, T, R, S).
 
 '400'(R, S) -> reply(400, R, S).
+'400'(T, R, S) -> reply(400, T, R, S).
+'400'(json, T, R, S) -> reply(404, ?CT_APPLICATION_JSON, T, R, S).
+
 '404'(R, S) -> reply(404, R, S).
 '404'(T, R, S) -> reply(404, T, R, S).
 '404'(json, T, R, S) -> reply(404, ?CT_APPLICATION_JSON, T, R, S).
