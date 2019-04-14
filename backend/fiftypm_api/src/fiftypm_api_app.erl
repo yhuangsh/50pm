@@ -14,9 +14,25 @@
 %% Macros
 %%====================================================================
 
+%% COHOST_STAGING means we deploy the staging services to the same
+%% K8s cluster where thr production services are also deployed
+%% This is for me to save money.  
+%% If COHOST_STAGING is defined, the K8s deployment and service names
+%% for the staging services will have to be different than the normal 
+%% one.
+%% In normal uses, the staging cluster should be a separate cluster 
+%% from the production one, therefore using different name is not 
+%% necessary or even a bad practice.
+%% COHOST_STAGING is defined is the cohost_staging profile is invoked
+%% by: rebar3 as cohost_staging ...
+-ifdef(COHOST_STAGING).
+-define(K8S_SVC_NAME, "fiftypm_api-stg").
+-else.
 -define(K8S_SVC_NAME, "fiftypm_api").
--define(K8S_DNS_PRE, ("server@" ++ ?K8S_SVC_NAME ++ "-")).
--define(K8S_DNS_POST, ("." ++ ?K8S_SVC_NAME ++ ".default.svc.cluster.local")).
+-endif.
+
+-define(K8S_DNS_PRE, "svr@" ++ ?K8S_SVC_NAME ++ "-").
+-define(K8S_DNS_POST, "." ++ ?K8S_SVC_NAME ++ ".default.svc.cluster.local").
 
 %%====================================================================
 %% API
@@ -25,7 +41,7 @@
 start(_StartType, _StartArgs) ->
     {ok, _} = application:ensure_all_started(cowboy),
     {ok, _} = init(),
-    fiftypm_sup:start_link().
+    fiftypm_api_sup:start_link().
 
 %%--------------------------------------------------------------------
 stop(_State) ->
@@ -48,10 +64,10 @@ init() ->
 %% TODO: the following code only works for X, where 0 <= X <= 9
 connect_prev_node(N) when is_atom(N) -> connect_prev_node(atom_to_list(N));
 connect_prev_node("nonode@nohost") -> none;
-connect_prev_node("server@fiftypm_api-" ++ [N | _]) -> connect_prev_node(N);
+connect_prev_node(?K8S_DNS_PRE ++ [N | _]) -> connect_prev_node(N);
 connect_prev_node($0) -> none;
 connect_prev_node(N) when is_integer(N) ->    
-    Np0 = ["server@fiftypm_api-", N-1, ".fiftypm_api.default.svc.cluster.local"],
+    Np0 = [?K8S_DNS_PRE, N-1, ?K8S_DNS_POST],
     Np1 = list_to_atom(lists:flatten(Np0)),
     pong = net_adm:ping(Np1),
     Np1.
@@ -102,11 +118,11 @@ init_tab_n(disc_copies) -> {atomic, ok}.
 %%
 start_cowboy(S) ->
     Dispatch = cowboy_router:compile(routes(S)),
-    {ok, _} = cowboy:start_clear(fiftypm_listner, [{port, 80}], #{env => #{dispatch => Dispatch}}).
+    {ok, _} = cowboy:start_clear(fiftypm_api_listner, [{port, 80}], #{env => #{dispatch => Dispatch}}).
 
 routes(S) -> [route0(S)].
-route0(S) -> {'_', [{prefix("/api/v1/probes/:pb"), fiftypm_api_probes, S},
-                    {prefix("/api/v1/status"), fiftypm_api_status, S},
+route0(S) -> {'_', [{prefix("/v1/probes/:pb"), fiftypm_api_probes, S},
+                    {prefix("/v1/status"), fiftypm_api_status, S},
                     {'_', fiftypm_api_badreq, []}]}.                
 
 prefix(Path) -> application:get_env(fiftypm_api, prefix, "") ++ Path.
