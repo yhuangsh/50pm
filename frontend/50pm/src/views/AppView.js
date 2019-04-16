@@ -19,33 +19,37 @@ const Frame = styled.div`
 // Components
 
 const AppView = () => {
-  const [pmtdOpt, setPmtdOpt] = useState(D.pmtd);
-  const [digitOpt, setDigitOpt] = useState(D.digits);
-  const [unknownOpt, setUnknownOpt] = useState(D.unknowns);
-  const [pageOpt, setPageOpt] = useState(D.pages);
+  const [pmtdOpt, setPmtdOpt] = useState(D.pmtdOpt());
+  const [digitOpt, setDigitOpt] = useState(D.digitOpt());
+  const [unknownOpt, setUnknownOpt] = useState(D.unknownOpt());
+  const [pageOpt, setPageOpt] = useState(D.pageOpt());
 
   const [equs, setEqus] = useState(genEqusList(pmtdOpt, pages(pageOpt), 50, digitOpt, unknownOpt));
 
   const onClickPmtd = (e, newPmtdOpt) => {
     setPmtdOpt(newPmtdOpt);
+    D.savePmtdOpt(newPmtdOpt);
     setEqus(genEqusList(newPmtdOpt, pages(pageOpt), 50, digitOpt, unknownOpt));
     //console.log('AppView.onClickPmtd: newPmtdOpt = ', newDPmtdpt);
   }
 
   const onClickDigit = (e, newDigitOpt) => {
     setDigitOpt(newDigitOpt);
+    D.saveDigitOpt(newDigitOpt);
     setEqus(genEqusList(pmtdOpt, pages(pageOpt), 50, newDigitOpt, unknownOpt));
     //console.log('AppView.onClickDigit: newDigitOpt = ', newDigitOpt);
   }
 
   const onClickUnknown = (e, newUnknownOpt) => {
     setUnknownOpt(newUnknownOpt);
+    D.saveUnknownOpt(newUnknownOpt);
     setEqus(genEqusList(pmtdOpt, pages(pageOpt), 50, digitOpt, newUnknownOpt));
     //console.log('AppView.onClickUnknown: newUnknownOpt =', newUnknownOpt);
   }
 
   const onClickPage = (e, newPageOpt) => {
     setPageOpt(newPageOpt);
+    D.savePageOpt(newPageOpt);
     setEqus(genEqusList(pmtdOpt, pages(newPageOpt), 50, digitOpt, unknownOpt));
     //console.log('AppView.onClickPage: newPageOpt =', newPageOpt);
   }
