@@ -6,8 +6,8 @@
 
 - Automate pulling build number from Travis into the info page
 - Automate pulling git tag name into the info page
-- Use cookie to rember options
 - Automate deploying to production with 'v.*' release tags
+- Use localStorage to remember settings
 
 ## v0.3 (_current_)
 
