@@ -1,33 +1,36 @@
-language: node_js
-node_js:
-  - "8"
-
 services:
   - docker
 
-before_install:
-  - cd frontend/50pm
+matrix:
+  include:
+  - language: node_js
+    node_js:
+      - "8"
 
-script:
-  - yarn build
 
-after_success:
-  - cd ..
-  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-  - chmod +x ./kubectl
-  - openssl aes-256-cbc -K $encrypted_78aec6180b5a_key -iv $encrypted_78aec6180b5a_iv -in ../config.enc -out kc -d
-  - pwd
-  - ls
-  - tools/dockerize.sh
-  - tools/deploy.staging.sh
-  - tools/deploy.production.sh
-  - echo $TRAVIS_BRANCH
-  - echo $TRAVIS_APP_HOST
-  - echo $TRAVIS_BUILD_DIR
-  - echo $TRAVIS_BUILD_NUMBER
-  - echo $TRAVIS_BUILD_ID
-  - echo $TRAVIS_BUILD_WEB_URL
-  - echo $TRAVIS_EVENT_TYPE
-  - echo $TRAVIS_JOB_NAME
-  - echo $TRAVIS_JOB_NUMBER
-  - echo $TRAVIS_TAG
+    before_install:
+      - cd frontend/50pm
+
+    script:
+      - yarn build
+
+    after_success:
+      - cd ..
+      - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - openssl aes-256-cbc -K $encrypted_78aec6180b5a_key -iv $encrypted_78aec6180b5a_iv -in ../config.enc -out kc -d
+      - pwd
+      - ls
+      - tools/dockerize.sh
+      - tools/deploy.staging.sh
+      - tools/deploy.production.sh
+      - echo $TRAVIS_BRANCH
+      - echo $TRAVIS_APP_HOST
+      - echo $TRAVIS_BUILD_DIR
+      - echo $TRAVIS_BUILD_NUMBER
+      - echo $TRAVIS_BUILD_ID
+      - echo $TRAVIS_BUILD_WEB_URL
+      - echo $TRAVIS_EVENT_TYPE
+      - echo $TRAVIS_JOB_NAME
+      - echo $TRAVIS_JOB_NUMBER
+      - echo $TRAVIS_TAG
