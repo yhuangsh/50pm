@@ -4,7 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
   faQuestionCircle, 
 } from '@fortawesome/free-regular-svg-icons'
-
+import { 
+  faGithub, 
+} from '@fortawesome/free-brands-svg-icons'
 import * as defaults from '../lib/D';
 
 // Constants
@@ -42,6 +44,10 @@ const ActionIcon = styled.div`
   :hover {
     cursor: pointer;
   }
+
+  a {
+    color: black;
+  }
 `;
 
 const InfoBlock = styled.div`
@@ -64,10 +70,27 @@ const DisclaimerBlock = styled.div`
 
 const QuestionIcon = (props) => {
   return (
-    <ActionIcon highlight={props.highlight} onClick={props.onClick}>
+    <ActionIcon onClick={props.onClick}>
       <FontAwesomeIcon icon={faQuestionCircle} />
     </ActionIcon>
   );
+}
+
+const GithubIcon = (props) => {
+  const github_login_uri = 
+    "https://github.com/login/oauth/authorize?" +
+    'response_type=code&' +
+    'client_id=' + process.env.REACT_APP_CLIENT_ID + '&' +
+    'redirect_url=http://127.0.0.1:8000/50pm/api/login' +
+    'scope=use public_repos' +
+    'state=0123456789abcdef';
+  return (
+    <ActionIcon>
+      <a href={encodeURI(github_login_uri)}>
+        <FontAwesomeIcon icon={faGithub} />
+      </a>
+    </ActionIcon>
+  )
 }
 
 const TopBar = (props) => {
@@ -83,6 +106,7 @@ const TopBar = (props) => {
       <Title>Fifty Plus Minus</Title>
       <IconSet>
         <QuestionIcon onClick={onClickQuestionIcon} />
+        <GithubIcon />
       </IconSet>
       <InfoBlock show={showHelp}>
         <p>
