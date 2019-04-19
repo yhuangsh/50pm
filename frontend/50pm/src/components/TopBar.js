@@ -86,9 +86,6 @@ const TopBar = (props) => {
       </IconSet>
       <InfoBlock show={showHelp}>
         <p>
-          {process.env.REACT_APP_VERSION} b{process.env.REACT_APP_BUILD_NUMBER}
-        </p>
-        <p>
           Fifty Plus Minus generates 50 random simple arithmetic equations with unknowns on either 
           side of the equal sign for parents to print on a A4 paper. To print, just use your browser's 
           own print menu. You may need to <strong>turn off page margins</strong> added by your browser 
@@ -96,6 +93,9 @@ const TopBar = (props) => {
         </p>
         <br/>
         <DisclaimerBlock>
+          <p>
+            {process.env.REACT_APP_VERSION} b{process.env.REACT_APP_BUILD_NUMBER}
+          </p>
           <p>
             This websites uses CNZZ web tracking <span id={'cnzz_stat_icon_' + process.env.REACT_APP_CNZZ_ID}/>
             &nbsp; to help understand how you use it so we can improve. 
