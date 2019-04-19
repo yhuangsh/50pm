@@ -7,7 +7,6 @@ matrix:
     node_js:
       - "8"
 
-
     before_install:
       - cd frontend/50pm
 
@@ -34,3 +33,18 @@ matrix:
       - echo $TRAVIS_JOB_NAME
       - echo $TRAVIS_JOB_NUMBER
       - echo $TRAVIS_TAG
+  
+  include:
+  - language: erlang
+    otp_release:
+      - 21.3
+
+    before_install:
+      - openssl aes-256-cbc -K $encrypted_8221a9566f19_key -iv $encrypted_8221a9566f19_iv -in apikey.config.enc -out backend/fiftypm_api/config/apikey.config -d
+    
+    install:
+      - echo 'do nothing'
+    
+    script:
+      - cd backend/fiftypm_api
+      - rebar3 eunit
