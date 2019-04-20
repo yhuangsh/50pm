@@ -47,4 +47,4 @@ matrix:
     
     script:
       - cd backend/fiftypm_api
-      - rebar3 eunit
+      - rebar3 as stg_cohost eunit
