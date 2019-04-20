@@ -1,0 +1,4 @@
+[
+    {mnesia, [{dir, "/deploy/data/fiftypm_api"}]},
+    "config/apikey.config"
+].
