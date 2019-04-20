@@ -123,6 +123,7 @@ start_cowboy(S) ->
 routes(S) -> [route0(S)].
 route0(S) -> {'_', [{prefix("/v1/probes/:pb"), fiftypm_api_probes, S},
                     {prefix("/v1/session"), fiftypm_api_session, S},
+                    {prefix("/login/:oidp"), fiftypm_api_login, S},
                     {'_', fiftypm_api_badreq, []}]}.                
 
 prefix(Path) -> application:get_env(fiftypm_api, prefix, "") ++ Path.
