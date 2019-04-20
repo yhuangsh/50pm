@@ -77,16 +77,9 @@ const QuestionIcon = (props) => {
 }
 
 const GithubIcon = (props) => {
-  const github_login_uri = 
-    "https://github.com/login/oauth/authorize?" +
-    'response_type=code&' +
-    'client_id=' + process.env.REACT_APP_CLIENT_ID + '&' +
-    'redirect_url=http://127.0.0.1:8000/50pm/api/login' +
-    'scope=use public_repos' +
-    'state=0123456789abcdef';
   return (
     <ActionIcon>
-      <a href={encodeURI(github_login_uri)}>
+      <a href={encodeURI(process.env.REACT_APP_LOGIN_URL+"/github")}>
         <FontAwesomeIcon icon={faGithub} />
       </a>
     </ActionIcon>
