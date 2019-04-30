@@ -8,7 +8,11 @@
 -behaviour(application).
 
 %% Application callbacks
--export([start/2, stop/1]).
+-export(
+    [
+        start/2, stop/1
+    ]
+).
 
 %%====================================================================
 %% Macros
@@ -129,6 +133,6 @@ route0(S) -> {'_', [{prefix("/v1/probes/:pb"), fiftypm_api_probes, S},
                     {prefix("/login/[...]"), fiftypm_api_login, S},
                     {'_', fiftypm_api_badreq, []}]}.                
 
-prefix(Path) -> application:get_env(fiftypm_api, prefix, "") ++ Path.
+prefix(Path) -> fiftypm_api_env:prefix(Path).
 
 state0() -> #{}.
