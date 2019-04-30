@@ -28,54 +28,81 @@
 %%====================================================================
 
 init(R, S) ->
-    PL = cowboy_req:path_info(R),
-    handle(PL, R, S).
+    PathList = cowboy_req:path_info(R),
+    #{session := Session} = cowboy_req:match_cookie([{session, [], undefined}]),
+    handle(Session, PathList, R, S).
 
-handle([Provider], R, S) -> oauth_start(Provider, R, S);
-handle([Provider, <<"callback">>], R, S) -> 
-    #{code := Code, state := State} 
-        = cowboy_req:match_qs(
-            [
-                {code, nonempty, undefined}, 
-                {state, int, undefined}
-            ],
-            R
-        ),
-    oauth_callback(Provider, Code, State, R, S).
+%%====================================================================
+%% Internal functions
+%%====================================================================
 
-oauth_start(<<"github">>, R, S) ->
+handle(_Session, [Provider], R, S) ->  oauth_start(Provider, R, S);
+handle(Session, [Provider, <<"callback">>], R, S) -> oauth_callback(Session, Provider, R, S).
+
+oauth_start(<<"github">>, R, S) -> 
     Q = build_qs(
         #{
             response_type => "code",
-            client_id => client_id(),
+            client_id => fiftypm_api_env:client_id(),
             redirect_uri => ?GITHUB_OAUTH_CB_URL,
             scope => "user",
-            state => integer_to_list(gen_state(github, state_timeout()))
+            state => binary_to_list(oauth_new_state(github, fiftypm_api_env:oauth_state_timeout()))
         }
     ),
     AuthURL = ?GITHUB_AUTH_URL ++ Q,
     httpres:'302'(AuthURL, R, S).
 
-oauth_callback(_Provider, undefined, _State, R, S) -> httpres:'400'("no code", R, S);
-oauth_callback(_Provider, _Code, undefined, R, S) -> httpres:'400'("bad state", R, S);
-oauth_callback(<<"github">>, Code, State, R, S) ->
+oauth_callback(Session, Provider, R, S) ->
+    #{code := Code, state := StateInt} 
+        = cowboy_req:match_qs(
+            [
+                {code, nonempty, undefined}, 
+                {state, nonempty, undefined}
+            ],
+            R
+        ),
+    oauth_callback(Session, Provider, Code, StateInt, R, S).
+
+oauth_callback(_Session, _Provider, undefined, _State, R, S) -> httpres:'400'("oauth callback - no code", R, S);
+oauth_callback(_Session, _Provider, _Code, undefined, R, S) -> httpres:'400'("oauth callback - no state", R, S);
+oauth_callback(Session, <<"github">>, Code, State, R, S) ->
+    ChkStateRet = oauth_chk_state(State, github),
+    oauth_callback_github(Session, ChkStateRet, Code, State, R, S).
+
+oauth_callback_github(_Session, false, _Code, _State, R, S) -> httpres:'400'("oauth callback - bad state", R, S);
+oauth_callback_github(Session, true, Code, State, R, S) ->
+    State = binary_to_list(State),
     Q = build_qs(
         #{
-            client_id => client_id(),
-            client_secret => client_secret(),
+            client_id => fiftypm_api_env:client_id(),
+            client_secret => fiftypm_api_env:client_secret(),
             code => binary_to_list(Code),
             redirect_uri => ?GITHUB_OAUTH_CB_URL,
-            state => integer_to_list(State)
+            state => State
         }
     ),
     TokenURL = ?GITHUB_TOKN_URL ++ Q,
     {ok, {{_, 200, _}, Headers, Body}} = httpc:request(post, {TokenURL, [], [], []}, [], []),
-    io:format("~noauth_callback Headers ~p", [Headers]),
-    io:format("~noauth_callback Body ~p~n", [Body]),
-    httpres:'302'(?APP_URL, R, S).
+    io:format("~noauth_callback_github Headers ~p", [Headers]),
+    io:format("~noauth_callback_github Body ~p~n", [Body]),
+    tab_kv:ddel(Session),
+    tab_kv:dset(State, {session, #{atoken => Body}}), % parsing body to get access token missing here
+    R1 = cowboy_req:set_resp_cookie(<<"session">>, State, R, session_cookie_opts()),
+    httpres:'302'(?APP_URL, R1, S).
+
+-define(DEFAULT_STATE_LEN, 8).
+oauth_new_state(Opaque, TimeOut) -> 
+    State = base64:encode(crypto:strong_rand_bytes(?DEFAULT_STATE_LEN)),
+    tab_kv:dset(State, {oauth_state, Opaque}),
+    _Pid = spawn(fun() -> timer:sleep(TimeOut), tab_kv:ddel(State) end),
+    State.
+
+oauth_chk_state(State, V) when is_integer(State) -> oauth_chk_state(State, V, tab_kv:dget(State)).
+oauth_chk_state(State, V, {State, {oauth_state, V}}) -> true;
+oauth_chk_state(_, _, _) -> false.
 
 %%====================================================================
-%% Internal functions
+%% Untility functions
 %%====================================================================
 
 build_qs(M) ->
@@ -86,17 +113,5 @@ build_qs(M) ->
     QS = lists:join("&", SL),
     lists:flatten(QS).
 
-client_id() -> client_id(application:get_env(fiftypm_api, client_id)).
-client_id({ok, ClientId}) -> ClientId.
-
-client_secret() -> client_secret(application:get_env(fiftypm_api, client_secret)).
-client_secret({ok, ClientSecret}) -> ClientSecret.
-
-gen_state(V, TimeOut) -> 
-    StateInt = rand:uniform(1000000),
-    tab_kv:dset(StateInt, {oauth_state, V}),
-    _Pid = spawn(fun() -> timer:sleep(TimeOut), tab_kv:ddel(StateInt) end),
-    StateInt.
-    
--define(DEFAULT_STATE_TIMEOUT, (10*1000)).
-state_timeout() -> application:get_env(fiftypm_api, state_timeout, ?DEFAULT_STATE_TIMEOUT).
+-define(DEFAULT_SESSION_COOKIE_OPTS, #{max_age => 30}).
+session_cookie_opts() -> ?DEFAULT_SESSION_COOKIE_OPTS.

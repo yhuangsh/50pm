@@ -31,8 +31,8 @@ add_table_copy() ->
 dset({K, V}) -> dset(K, V).
 dset(K, V) -> mnesia:dirty_write({?TAB_KV, K, V}).
 dget(K) -> dget_1(mnesia:dirty_read(?TAB_KV, K)).
-dget_1([]) -> [];
-dget_1([{?TAB_KV, K, V}]) -> [{K, V}].
+dget_1([]) -> undefined;
+dget_1([{?TAB_KV, K, V}]) -> {K, V}.
 ddel(K) -> mnesia:dirty_delete(?TAB_KV, K).
 
 %%====================================================================
@@ -62,7 +62,6 @@ setup() ->
     {atomic, ok} = create_table(),
     S0 = {k0, v0},
     Ret = dset(S0),
-    io:format("dset Ret = ~p", [Ret]), 
     S0.
 
 cleanup(_) -> 
@@ -74,19 +73,19 @@ test_dset(_S0) ->
     S1 = {k1, V1},
     ok = dset(S1),
     [
-        ?_assertMatch([S1], dget(k1))
+        ?_assertMatch(S1, dget(k1))
     ].
 
 test_dget(S0 = {k0, v0}) ->
     [
-        ?_assertMatch([S0], dget(k0)),
-        ?_assertEqual([], dget(not_exist))
+        ?_assertMatch(S0, dget(k0)),
+        ?_assertEqual(undefined, dget(not_exist))
     ].
 
 test_ddel(S0 = {k0, v0}) ->
     [
         ?_assertEqual(ok, ddel(k0)),
-        ?_assertEqual([], dget(S0))
+        ?_assertEqual(undefined, dget(S0))
     ].
 
 -endif.
