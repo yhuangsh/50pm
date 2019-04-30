@@ -53,7 +53,7 @@ oauth_start(<<"github">>, R, S) ->
     httpres:'302'(AuthURL, R, S).
 
 oauth_callback(Session, Provider, R, S) ->
-    #{code := Code, state := StateInt} 
+    #{code := Code, state := State} 
         = cowboy_req:match_qs(
             [
                 {code, nonempty, undefined}, 
@@ -61,7 +61,7 @@ oauth_callback(Session, Provider, R, S) ->
             ],
             R
         ),
-    oauth_callback(Session, Provider, Code, StateInt, R, S).
+    oauth_callback(Session, Provider, Code, State, R, S).
 
 oauth_callback(_Session, _Provider, undefined, _State, R, S) -> httpres:'400'("oauth callback - no code", R, S);
 oauth_callback(_Session, _Provider, _Code, undefined, R, S) -> httpres:'400'("oauth callback - no state", R, S);
@@ -71,14 +71,14 @@ oauth_callback(Session, <<"github">>, Code, State, R, S) ->
 
 oauth_callback_github(_Session, false, _Code, _State, R, S) -> httpres:'400'("oauth callback - bad state", R, S);
 oauth_callback_github(Session, true, Code, State, R, S) ->
-    State = binary_to_list(State),
+    StateStr = binary_to_list(State),
     Q = build_qs(
         #{
             client_id => fiftypm_api_env:client_id(),
             client_secret => fiftypm_api_env:client_secret(),
             code => binary_to_list(Code),
             redirect_uri => ?GITHUB_OAUTH_CB_URL,
-            state => State
+            state => StateStr
         }
     ),
     TokenURL = ?GITHUB_TOKN_URL ++ Q,
