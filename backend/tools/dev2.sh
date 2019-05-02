@@ -11,4 +11,4 @@ docker run \
     -v `pwd`:/project \
     -p 8002:8000 \
     -it \
-    yhuangsh/dev-alpine-erlang:latest
+    yhuangsh/fiftypm_api_dev:latest

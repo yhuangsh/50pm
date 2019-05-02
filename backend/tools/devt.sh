@@ -10,4 +10,4 @@ docker run \
     --add-host fiftypm_api-staging-2.fiftypm_api-staging.default.svc.cluster.local:172.28.0.14 \
     -v `pwd`:/project \
     -it \
-    yhuangsh/dev-alpine-erlang:latest
+    yhuangsh/fiftypm_api_dev:latest

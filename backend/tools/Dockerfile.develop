@@ -1,0 +1,5 @@
+FROM erlang:21-alpine
+RUN mkdir -p /project && \
+    mkdir -p /deploy/data/fiftypm_api
+WORKDIR /project
+ENTRYPOINT ["/bin/sh"]
