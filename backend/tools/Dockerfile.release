@@ -1,7 +1,7 @@
-FROM alpine:3.8
-# erlang dependencies extracted from official erlang alpine dockerfile. Look for how .erlang-deps was extracted
-# https://github.com/erlang/docker-erlang-otp/blob/e2e804aeeb6e6bc5fd49f66481be1dff829428f5/21/alpine/Dockerfile
-RUN apk add so:libcrypto.so.1.0.0 so:libncursesw.so.6 so:libz.so.1
+FROM alpine:3.9
+# erlang dependencies extracted from official erlang alpine dockerfile. Look for how runDeps was extracted
+# scanelf --needed --nobanner --format '%n#p' --recursive /usr/local | tr ',' '\n' | sort -u | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }'
+RUN apk add so:libcrypto.so.1.1 so:libncursesw.so.6 so:libodbc.so.2 lksctp-tools
 ADD _build/default/rel/fiftypm_api /deploy/fiftypm_api
 ADD priv/start.sh /deploy/fiftypm_api
 RUN mkdir -p /deploy/data/fifitypm_api
