@@ -1,5 +1,9 @@
 -module(fiftypm_api_login).
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 -export([init/2]).
 
 -define(GITHUB_AUTH_URL, "https://github.com/login/oauth/authorize?").
@@ -88,7 +92,7 @@ oauth_callback_github(Session, true, Code, StateInt, R, S) ->
         ),
     io:format("~noauth_callback_github Headers ~p", [Headers]),
     io:format("~noauth_callback_github Body ~p~n", [Body]),
-    del_old_session(Session),
+    del_session(Session),
     SessionData =
         cowboy_req:match_qs(
             [
@@ -105,23 +109,33 @@ oauth_callback_github(Session, true, Code, StateInt, R, S) ->
 %% state
 oauth_new_state(Opaque, TimeOut) -> 
     StateInt = rand:uniform(fiftypm_api_env:oauth_state_domain()),
-    tab_kv:dset(oauth_state, StateInt, Opaque),
-    _Pid = spawn(fun() -> timer:sleep(TimeOut), tab_kv:ddel(oauth_state, StateInt) end),
+    kv:dset(oauth_state, StateInt, Opaque),
+    _Pid = spawn(fun() -> timer:sleep(TimeOut), kv:ddel(oauth_state, StateInt) end),
     StateInt.
 
-oauth_chk_state(StateInt, Opaque) when is_integer(StateInt) -> oauth_chk_state(StateInt, Opaque, tab_kv:dget(oauth_state, StateInt)).
+oauth_chk_state(StateInt, Opaque) when is_integer(StateInt) -> oauth_chk_state(StateInt, Opaque, kv:dget(oauth_state, StateInt)).
 oauth_chk_state(StateInt, Opaque, {StateInt, Opaque}) -> true;
 oauth_chk_state(_, _, _) -> false.
 
 %% session
-del_old_session(undefined) -> ok;
-del_old_session(Session) when is_binary(Session) -> tab_kv:ddel(session, Session).
+del_session(undefined) -> ok;
+del_session(SessionId) when is_binary(SessionId) -> kv:ddel(session, SessionId).
 
-new_session(SessionData) when is_map(SessionData) ->
+get_session(SessionId) -> kv:dget(session, SessionId).
+
+new_session(SessionData) -> new_session(SessionData, session_cookie_opts()).
+new_session(SessionData, SessionCookieOpts) when is_map(SessionData) ->
     SessionId = gen_session_id(),
     Atime = Ctime = calendar:universal_time(),
-    SessionCookieOpts = session_cookie_opts(),
-    tab_kv:dset(session, SessionId, SessionData#{ctime => Ctime, atime => Atime}),
+    kv:dset(
+        session, 
+        SessionId, 
+        SessionData#{
+            ctime => Ctime, 
+            atime => Atime, 
+            cookie_opts => SessionCookieOpts
+        }
+    ),
     {SessionId, SessionCookieOpts}.
 
 -define(DEFAULT_SESSION_ID_LEN, 8).
@@ -142,4 +156,63 @@ build_qs(M) ->
     QS = lists:join("&", SL),
     lists:flatten(QS).
 
+%%====================================================================
+%% Unit tests
+%%====================================================================
+
+-ifdef(TEST).
+
+login_test_() ->
+    {
+        setup, 
+        fun setup/0, 
+        fun cleanup/1, 
+        fun (_D) ->
+            [
+                test_oauth_state(),
+                test_session()
+            ] 
+        end
+    }.
+
+setup() ->
+    mnesia:delete_schema([node()]),
+    ok = mnesia:create_schema([node()]),
+    ok = mnesia:start(),
+    {atomic, ok} = kv:create_table([oauth_state, session]),
+    ok.
+
+cleanup(_) -> 
+    {atomic, ok} = mnesia:delete_table(oauth_state),
+    {atomic, ok} = mnesia:delete_table(session),
+    stopped = mnesia:stop().
+
+test_oauth_state() ->    
+    State = oauth_new_state("oauth_state", 50), 
+    ChkStateRetBeforeTimout = oauth_chk_state(State, "oauth_state"),
+    timer:sleep(60),
+    ChkStateRetAfterTimout = oauth_chk_state(State, "oauth_state"),
+    [
+        ?_assertMatch(true, is_integer(State)),
+        ?_assertMatch(true, ChkStateRetBeforeTimout),
+        ?_assertMatch(false, ChkStateRetAfterTimout)
+    ].
+
+test_session() ->
+    {SessionId, _CookieOpts} = new_session(#{test_data => "session data"}),
+    {SessionId2, SessionData} = get_session(SessionId),
+    ok = del_session(SessionId),
+    Undefined = get_session(SessionId),
+    [
+        ?_assertMatch(
+            true, 
+            maps:is_key(test_data, SessionData) andalso
+                maps:is_key(atime, SessionData) andalso
+                maps:is_key(ctime, SessionData) andalso
+                maps:is_key(cookie_opts, SessionData)
+        ),
+        ?_assertMatch(SessionId, SessionId2),
+        ?_assertMatch(undefined, Undefined)
+    ].
+-endif.
 
