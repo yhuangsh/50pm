@@ -108,7 +108,7 @@ start_mnesia_init_tab(Np) when is_atom(Np) ->
     SchemaStorageType1 = mnesia:table_info(schema, storage_type),
     init_tab_n(SchemaStorageType1).
 
-init_tab_0(ok) -> {atomic, ok} = tab_kv:create_table(kv_tables());
+init_tab_0(ok) -> {atomic, ok} = kv:create_table(kv_tables());
 init_tab_0({error, {_,{already_exists, _}}}) -> {atomic, ok}.
 
 add_this_node(ram_copies, Np) -> {ok, _} = mnesia:change_config(extra_db_nodes, [Np]);
@@ -116,7 +116,7 @@ add_this_node(disc_copies, _) -> {ok, ignored}.
 
 init_tab_n(ram_copies) -> 
     {atomic, ok} = mnesia:change_table_copy_type(schema, node(), disc_copies),
-    {atomic, ok} = tab_kv:add_table_copy(kv_tables());
+    {atomic, ok} = kv:add_table_copy(kv_tables());
 init_tab_n(disc_copies) -> {atomic, ok}.
 
 kv_tables() -> [oauth_state, session].

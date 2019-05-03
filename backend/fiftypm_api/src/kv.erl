@@ -1,4 +1,4 @@
--module(tab_kv).
+-module(kv).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -20,11 +20,13 @@
 %%====================================================================
 
 %% Bootstrap
+create_table([]) -> {atomic, ok};
 create_table([Tab | RestTabs])  -> create_table(Tab), create_table(RestTabs);
 create_table(TabName) when is_atom(TabName) -> create_table({TabName, ram});
 create_table({TabName, ram}) when is_atom(TabName) -> {atomic, ok} = mnesia:create_table(TabName, [{ram_copies, [node()]}]);
 create_table({TabName, disc}) when is_atom(TabName) -> {atomic, ok} = mnesia:create_table(TabName, [{disc_copies, [node()]}]). 
 
+add_table_copy([]) -> {atomic, ok};
 add_table_copy([Tab | RestTabs])  -> add_table_copy(Tab), add_table_copy(RestTabs);
 add_table_copy(TabName) when is_atom(TabName) -> add_table_copy({TabName, ram});
 add_table_copy({TabName, ram}) when is_atom(TabName) -> {atomic, ok} = mnesia:add_table_copy(TabName, node(), ram_copies);
@@ -64,7 +66,7 @@ setup() ->
     ok = mnesia:start(),
     {atomic, ok} = create_table(kv_test),
     S0 = {k0, v0},
-    Ret = dset(kv_test, S0),
+    dset(kv_test, S0),
     S0.
 
 cleanup(_) -> 
