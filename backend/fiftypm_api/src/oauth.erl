@@ -9,7 +9,7 @@
         create_table/0, 
         add_table_copy/0,
 
-        initiate/3,
+        initiate/1,
         callback/4
     ]
 ).
@@ -37,7 +37,7 @@
 create_table() -> kv:create_table(oauth_state).
 add_table_copy() -> kv:add_table_copy(oauth_state).
 
-initiate(<<"github">>, R, S) -> 
+initiate(<<"github">>) -> 
     Params = 
         build_qs(
             #{
@@ -48,8 +48,7 @@ initiate(<<"github">>, R, S) ->
                 state => integer_to_list(new_state(github))
             }
         ),
-    AuthURL = ?GITHUB_AUTH_URL ++ Params,
-    httpres:'302'(AuthURL, R, S).
+    _AuthURL = ?GITHUB_AUTH_URL ++ Params.
 
 callback(Session, Provider, R, S) ->
     #{code := Code, state := StateInt} =

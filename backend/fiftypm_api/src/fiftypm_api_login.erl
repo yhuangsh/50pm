@@ -12,15 +12,22 @@
 
 init(R, S) ->
     PathList = cowboy_req:path_info(R),
-    #{session := Session} = cowboy_req:match_cookie([{session, [], undefined}]),
-    login(Session, PathList, R, S).
+    #{session := OldSession} = cowboy_req:match_cookie([{session, [], undefined}]),
+    login(OldSession, PathList, R, S).
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
 
-login(_Session, [Provider], R, S) ->  oauth:initiate(Provider, R, S);
-login(Session, [Provider, <<"callback">>], R, S) -> oauth:callback(Session, Provider, R, S).
+login(_OldSessionId, [Provider], R, S) ->  httpres:'302'(oauth:initiate(Provider), R, S);
+login(OldSessionId, [Provider, <<"callback">>], R, S) -> start_new_session(oauth:callback(Provider), OldSessionId, R, S).
+
+start_new_session({error, Msg}, _OldSessionId, R, S) -> httpres:'400'(Msg, R, S);
+start_new_session({AppURL, OAuthRes}, OldSessionId, R, S) when is_list(AppURL), is_map(OAuthRes) ->
+    session:delete(OldSessionId),
+    {NewSession, SessionCookieOpts} = session:new(OAuthRes),
+    R1 = cowboy_req:set_resp_cookie(<<"session">>, NewSession, R, SessionCookieOpts),
+    httpres:'302'(AppURL, R1, S).
 
 %%====================================================================
 %% Unit tests
