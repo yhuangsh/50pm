@@ -14,22 +14,6 @@
     ]
 ).
 
--define(GITHUB_AUTH_URL, "https://github.com/login/oauth/authorize?").
--define(GITHUB_TOKN_URL, "https://github.com/login/oauth/access_token?").
-
--ifdef(DEVELOP).
-    -define(GITHUB_OAUTH_CB_URL, "http://127.0.0.1:8000/50pm/api/login/github/callback").
-    -define(APP_URL, "http://127.0.0.1:8080/50pm").
--else.
-    -ifdef(STAGING).
-        -define(GITHUB_OAUTH_CB_URL, "https://dev.davidhuang.top/50pm/api/login/github/callback").
-        -define(APP_URL, "https://dev.davidhuang.top/50pm").
-    -else.
-        -define(GITHUB_OAUTH_CB_URL, "GITHUB_OAUTH_CB_URL not properly set").
-        -define(APP_URL, "APP_URL not properly set").
-    -endif.
--endif.
-
 %%====================================================================
 %% API
 %%====================================================================
@@ -42,13 +26,13 @@ initiate(<<"github">>, _QueryStr) ->
         build_qs(
             #{
                 response_type => "code",
-                client_id => fiftypm_api_env:oauth_client_id(github),
-                redirect_uri => ?GITHUB_OAUTH_CB_URL,
+                client_id => client_id(github),
+                redirect_uri => github_auth_callback_url(),
                 scope => "user",
                 state => integer_to_list(new_state(github))
             }
         ),
-    _AuthURL = ?GITHUB_AUTH_URL ++ Params.
+    _AuthURL = github_auth_url() ++ Params.
 
 callback(<<"github">>, QueryStr) ->
     #{code := Code, state := StateInt} =
@@ -61,6 +45,10 @@ callback(<<"github">>, QueryStr) ->
         ),
     callback_github(Code, StateInt).
 
+%%====================================================================
+%% Internal functions
+%%====================================================================
+
 callback_github(undefined, _StateInt) -> {error, "oauth:callback - no code"};
 callback_github(_Code, undefined) -> {error, "oauth:callback - no state"};
 callback_github(Code, StateInt) -> callback_github(chk_state(StateInt, github), Code, StateInt).
@@ -70,15 +58,15 @@ callback_github(true, Code, StateInt) ->
     Params = 
         build_qs(
             #{
-                client_id => fiftypm_api_env:oauth_client_id(github),
+                client_id => client_id(github),
                 code => binary_to_list(Code),
-                redirect_uri => ?GITHUB_OAUTH_CB_URL,
+                redirect_uri => github_auth_callback_url(),
                 state => State
             }
         ),
-    AuthHeader = {"Authorization", "Basic " ++ fiftypm_api_env:oauth_client_secret(github)},
+    AuthHeader = {"Authorization", "Basic " ++ client_secret(github)},
     ContentType = "application/x-www-form-urlencoded",
-    TokenURL = ?GITHUB_TOKN_URL,
+    TokenURL = github_token_url(),
     {ok, {{_, 200, _}, Headers, Body}} = 
         httpc:request(
             post, 
@@ -97,22 +85,53 @@ callback_github(true, Code, StateInt) ->
             ], 
             #{qs => Body}
         ),
-    {ok, ?APP_URL, SessionData}.
+    {ok, github_app_url(), SessionData}.
 
-%%====================================================================
-%% Internal functions
-%%====================================================================
+%% Client credentials
+client_id(github) -> client_id(application:get_env(fiftypm_api, oauth_github_client_id));
+client_id({ok, ClientId}) -> ClientId.
 
-new_state(Opaque) -> new_state(Opaque, fiftypm_api_env:oauth_state_timeout()).
+client_secret(github) -> client_secret(application:get_env(fiftypm_api, oauth_github_client_secret));
+client_secret({ok, ClientSecret}) -> ClientSecret.
+
+%% OAuth state
+new_state(Opaque) -> new_state(Opaque, state_timeout()).
 new_state(Opaque, TimeOut) -> 
-    StateInt = rand:uniform(fiftypm_api_env:oauth_state_domain()),
+    StateInt = rand:uniform(state_domain()),
     kv:dset(oauth_state, StateInt, Opaque),
     _Pid = spawn(fun() -> timer:sleep(TimeOut), kv:ddel(oauth_state, StateInt) end),
     StateInt.
 
+-define(DEFAULT_STATE_DOMAIN, 1000000000).
+state_domain() -> application:get_env(fiftypm_api, oauth_state_domain, ?DEFAULT_STATE_DOMAIN).
+-define(DEFAULT_STATE_TIMEOUT, (15*1000)).
+state_timeout() -> application:get_env(fiftypm_api, oauth_state_timeout, ?DEFAULT_STATE_TIMEOUT).
+
 chk_state(StateInt, Opaque) when is_integer(StateInt) -> chk_state(StateInt, Opaque, kv:dget(oauth_state, StateInt)).
 chk_state(StateInt, Opaque, {StateInt, Opaque}) -> true;
 chk_state(_, _, _) -> false.
+
+%% OAuth settings
+github_auth_url() -> application:get_env(fiftypm_api, oauth_github_auth_url). 
+github_token_url() -> application:get_env(fiftypm_api, oauth_github_token_url). 
+
+-ifdef(DEVELOP).
+github_auth_callback_url() -> application:get_env(fiftypm_api, oauth_github_auth_callback_url_develop).
+github_app_url() -> application:get_env(fiftypm_api, oauth_github_app_url_develop).
+-else.
+    -ifdef(STAGING).
+github_auth_callback_url() -> application:get_env(fiftypm_api, oauth_github_auth_callback_url_staging).
+github_app_url() -> application:get_env(fiftypm_api, oauth_github_app_url_staging).
+    -else.
+        -ifdef(RELEASE).
+github_auth_callback_url() -> application:get_env(fiftypm_api, oauth_github_auth_callback_url_release).
+github_app_url() -> application:get_env(fiftypm_api, oauth_github_app_url_release).
+        -else.
+github_auth_callback_url() -> throw(build_option_not_defined).
+github_app_url() -> throw(build_option_not_defined).
+        -endif.
+    -endif.
+-endif.
 
 %%====================================================================
 %% Untility functions
@@ -132,7 +151,7 @@ build_qs(M) ->
 
 -ifdef(TEST).
 
-login_test_() ->
+oauth_test_() ->
     {
         setup, 
         fun setup/0, 
