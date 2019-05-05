@@ -40,7 +40,7 @@ matrix:
       - 21.3
 
     before_install:
-      - openssl aes-256-cbc -K $encrypted_8221a9566f19_key -iv $encrypted_8221a9566f19_iv -in apikey.config.enc -out backend/fiftypm_api/config/apikey.config -d
+      - openssl aes-256-cbc -K $encrypted_e3afacad6414_key -iv $encrypted_e3afacad6414_iv -in backend/oauth.secret.config.enc -out backend/fiftypm_api/config/oauth.secret.config -d
     
     install:
       - echo 'do nothing'
