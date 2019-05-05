@@ -19,11 +19,11 @@ init(R, S) ->
 %% Internal functions
 %%====================================================================
 
-login(_OldSessionId, [Provider], R, S) ->  httpres:'302'(oauth:initiate(Provider), R, S);
-login(OldSessionId, [Provider, <<"callback">>], R, S) -> start_new_session(oauth:callback(Provider), OldSessionId, R, S).
+login(_OldSessionId, [Provider], R, S) -> httpres:'302'(oauth:initiate(Provider, cowboy_req:qs()), R, S);
+login(OldSessionId, [Provider, <<"callback">>], R, S) -> start_new_session(oauth:callback(Provider, cowboy_req:qs()), OldSessionId, R, S).
 
 start_new_session({error, Msg}, _OldSessionId, R, S) -> httpres:'400'(Msg, R, S);
-start_new_session({AppURL, OAuthRes}, OldSessionId, R, S) when is_list(AppURL), is_map(OAuthRes) ->
+start_new_session({ok, AppURL, OAuthRes}, OldSessionId, R, S) when is_list(AppURL), is_map(OAuthRes) ->
     session:delete(OldSessionId),
     {NewSession, SessionCookieOpts} = session:new(OAuthRes),
     R1 = cowboy_req:set_resp_cookie(<<"session">>, NewSession, R, SessionCookieOpts),

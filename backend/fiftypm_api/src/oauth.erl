@@ -9,8 +9,8 @@
         create_table/0, 
         add_table_copy/0,
 
-        initiate/1,
-        callback/4
+        initiate/2,
+        callback/2
     ]
 ).
 
@@ -37,7 +37,7 @@
 create_table() -> kv:create_table(oauth_state).
 add_table_copy() -> kv:add_table_copy(oauth_state).
 
-initiate(<<"github">>) -> 
+initiate(<<"github">>, _QueryStr) -> 
     Params = 
         build_qs(
             #{
@@ -50,25 +50,22 @@ initiate(<<"github">>) ->
         ),
     _AuthURL = ?GITHUB_AUTH_URL ++ Params.
 
-callback(Session, Provider, R, S) ->
+callback(<<"github">>, QueryStr) ->
     #{code := Code, state := StateInt} =
         cowboy_req:match_qs(
             [
                 {code, nonempty, undefined}, 
                 {state, int, undefined}
             ],
-            R
+            #{qs => QueryStr}
         ),
-    callback(Session, Provider, Code, StateInt, R, S).
+    callback_github(Code, StateInt).
 
-callback(_Session, _Provider, undefined, _StateInt, R, S) -> httpres:'400'("oauth:callback - no code", R, S);
-callback(_Session, _Provider, _Code, undefined, R, S) -> httpres:'400'("oauth:callback - no state", R, S);
-callback(Session, <<"github">>, Code, StateInt, R, S) ->
-    ChkStateRet = chk_state(StateInt, github),
-    callback_github(Session, ChkStateRet, Code, StateInt, R, S).
-
-callback_github(_Session, false, _Code, _StateInt, R, S) -> httpres:'400'("oauth:callback - bad state", R, S);
-callback_github(Session, true, Code, StateInt, R, S) ->
+callback_github(undefined, _StateInt) -> {error, "oauth:callback - no code"};
+callback_github(_Code, undefined) -> {error, "oauth:callback - no state"};
+callback_github(Code, StateInt) -> callback_github(chk_state(StateInt, github), Code, StateInt).
+callback_github(false, _Code, _StateInt) -> {error, "oauth:callback - bad state"};
+callback_github(true, Code, StateInt) ->
     State = integer_to_list(StateInt),
     Params = 
         build_qs(
@@ -91,19 +88,16 @@ callback_github(Session, true, Code, StateInt, R, S) ->
         ),
     io:format("~noauth:callback_github Headers ~p", [Headers]),
     io:format("~noauth:callback_github Body ~p~n", [Body]),
-    session:delete(Session),
     SessionData =
         cowboy_req:match_qs(
             [
-                {access_token, nonempty, undefined},
-                {scope, nonempty, undefined},
-                {token_type, nonempty, <<"bearer">>}
+                {access_token, nonempty},
+                {scope, nonempty},
+                {token_type, nonempty}
             ], 
             #{qs => Body}
         ),
-    {NewSession, SessionCookieOpts} = session:new(SessionData),
-    R1 = cowboy_req:set_resp_cookie(<<"session">>, NewSession, R, SessionCookieOpts),
-    httpres:'302'(?APP_URL, R1, S).
+    {ok, ?APP_URL, SessionData}.
 
 %%====================================================================
 %% Internal functions
