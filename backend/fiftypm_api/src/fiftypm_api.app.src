@@ -5,7 +5,9 @@
   {mod, { fiftypm_api_app, []}},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    ssl,
+    inets
    ]},
   {modules, []},
   {maintainers, []},
