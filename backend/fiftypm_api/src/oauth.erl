@@ -26,7 +26,7 @@ initiate(<<"github">>, _QueryStr) ->
         build_qs(
             #{
                 response_type => "code",
-                client_id => client_id(github),
+                client_id => github_client_id(),
                 redirect_uri => github_auth_callback_url(),
                 scope => "user",
                 state => integer_to_list(new_state(github))
@@ -58,13 +58,13 @@ callback_github(true, Code, StateInt) ->
     Params = 
         build_qs(
             #{
-                client_id => client_id(github),
+                client_id => github_client_id(),
                 code => binary_to_list(Code),
                 redirect_uri => github_auth_callback_url(),
                 state => State
             }
         ),
-    AuthHeader = {"Authorization", "Basic " ++ client_secret(github)},
+    AuthHeader = {"Authorization", "Basic " ++ github_client_secret()},
     ContentType = "application/x-www-form-urlencoded",
     TokenURL = github_token_url(),
     {ok, {{_, 200, _}, Headers, Body}} = 
@@ -87,12 +87,6 @@ callback_github(true, Code, StateInt) ->
         ),
     {ok, github_app_url(), SessionData}.
 
-%% Client credentials
-client_id(github) -> client_id(application:get_env(fiftypm_api, oauth_github_client_id));
-client_id({ok, ClientId}) -> ClientId.
-
-client_secret(github) -> client_secret(application:get_env(fiftypm_api, oauth_github_client_secret));
-client_secret({ok, ClientSecret}) -> ClientSecret.
 
 %% OAuth state
 new_state(Opaque) -> new_state(Opaque, state_timeout()).
@@ -102,30 +96,32 @@ new_state(Opaque, TimeOut) ->
     _Pid = spawn(fun() -> timer:sleep(TimeOut), kv:ddel(oauth_state, StateInt) end),
     StateInt.
 
--define(DEFAULT_STATE_DOMAIN, 1000000000).
-state_domain() -> application:get_env(fiftypm_api, oauth_state_domain, ?DEFAULT_STATE_DOMAIN).
--define(DEFAULT_STATE_TIMEOUT, (15*1000)).
-state_timeout() -> application:get_env(fiftypm_api, oauth_state_timeout, ?DEFAULT_STATE_TIMEOUT).
-
 chk_state(StateInt, Opaque) when is_integer(StateInt) -> chk_state(StateInt, Opaque, kv:dget(oauth_state, StateInt)).
 chk_state(StateInt, Opaque, {StateInt, Opaque}) -> true;
 chk_state(_, _, _) -> false.
 
 %% OAuth settings
-github_auth_url() -> application:get_env(fiftypm_api, oauth_github_auth_url). 
-github_token_url() -> application:get_env(fiftypm_api, oauth_github_token_url). 
+state_domain() -> get_env(oauth_state_domain).
+state_timeout() -> get_env(oauth_state_timeout).
+
+%% OAuth settings - Github
+github_client_id() -> get_env(oauth_github_client_id).
+github_client_secret() -> get_env(oauth_github_client_secret).
+
+github_auth_url() -> get_env(oauth_github_auth_url). 
+github_token_url() -> get_env(oauth_github_token_url). 
 
 -ifdef(DEVELOP).
-github_auth_callback_url() -> application:get_env(fiftypm_api, oauth_github_auth_callback_url_develop).
-github_app_url() -> application:get_env(fiftypm_api, oauth_github_app_url_develop).
+github_auth_callback_url() -> get_env(oauth_github_auth_callback_url_develop).
+github_app_url() -> get_env(oauth_github_app_url_develop).
 -else.
     -ifdef(STAGING).
-github_auth_callback_url() -> application:get_env(fiftypm_api, oauth_github_auth_callback_url_staging).
-github_app_url() -> application:get_env(fiftypm_api, oauth_github_app_url_staging).
+github_auth_callback_url() -> get_env(oauth_github_auth_callback_url_staging).
+github_app_url() -> get_env(oauth_github_app_url_staging).
     -else.
         -ifdef(RELEASE).
-github_auth_callback_url() -> application:get_env(fiftypm_api, oauth_github_auth_callback_url_release).
-github_app_url() -> application:get_env(fiftypm_api, oauth_github_app_url_release).
+github_auth_callback_url() -> get_env(oauth_github_auth_callback_url_release).
+github_app_url() -> get_env(oauth_github_app_url_release).
         -else.
 github_auth_callback_url() -> throw(build_option_not_defined).
 github_app_url() -> throw(build_option_not_defined).
@@ -144,6 +140,9 @@ build_qs(M) ->
             PL),
     QS = lists:join("&", SL),
     lists:flatten(QS).
+
+get_env(Env) -> get_env(Env, undefined).
+get_env(Env, Default) -> application:get_env(fiftypm_api, Env, Default).
 
 %%====================================================================
 %% Unit tests
