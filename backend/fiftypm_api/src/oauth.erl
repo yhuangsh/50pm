@@ -163,6 +163,11 @@ oauth_test_() ->
     }.
 
 setup() ->
+    %% manually load application configs, as Eunit does not do it.
+    ok = application:load(fiftypm_api),
+    {ok, [AppCfg]} = file:consult("config/oauth.config"),
+    application:set_env(AppCfg),
+    %?debugFmt("~nENV after = ~p", [application:get_all_env(fiftypm_api)]),
     mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     ok = mnesia:start(),
